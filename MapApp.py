@@ -103,12 +103,15 @@ with open(os.path.join('', 'geopulses.json')) as f:
 
 m = folium.Map()
 
-for p in pulses['features']:
+for pulse in pulses['features']:
+    p = pulse['properties']
     coord = p['geometry']['coordinates']
-    content = p['properties']['content']
-    pulseid = p['properties']['pulseid']
+    content = p['content']
+    pulseid = p['pulseid']
     url = "<a href=\"https://cliowire.dhlab.epfl.ch/web/statuses/"+str(pulseid)+"\">"+content+"</a>"
     folium.Marker(coord, popup=url).add_to(m)
 
+Search(pulses, search_label='entity', search_zoom=3).add_to(m)
+#Search(pulses, search_label='otherentity', position='topright').add_to(m)
 
 m.save('MapAppTest.html')
