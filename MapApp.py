@@ -100,18 +100,20 @@ class Search(MacroElement):
 
 with open(os.path.join('', 'geopulses.json')) as f:
     pulses = json.loads(f.read())
-
+#generating map on which to add infos
 m = folium.Map()
 
+#adding a search bar, and indexing the pulses according to their name entities.
+Search(pulses, search_label='entity', search_zoom=12).add_to(m)
+
+#adding a marker with popup to the place of the pulses.
 for pulse in pulses['features']:
     p = pulse['properties']
-    coord = p['geometry']['coordinates']
+    coord = pulse['geometry']['coordinates']
+    invCoord = [coord[1], coord[0]]
     content = p['content']
     pulseid = p['pulseid']
     url = "<a href=\"https://cliowire.dhlab.epfl.ch/web/statuses/"+str(pulseid)+"\">"+content+"</a>"
-    folium.Marker(coord, popup=url).add_to(m)
-
-Search(pulses, search_label='entity', search_zoom=3).add_to(m)
-#Search(pulses, search_label='otherentity', position='topright').add_to(m)
+    folium.Marker(invCoord, popup=url).add_to(m)
 
 m.save('MapAppTest.html')
