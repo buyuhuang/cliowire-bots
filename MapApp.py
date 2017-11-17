@@ -1,10 +1,14 @@
-import folium
-
 from __future__ import (absolute_import, division, print_function)
 
 from branca.element import CssLink, Figure, JavascriptLink, MacroElement
 
 from jinja2 import Template
+
+import folium
+
+import os
+
+import json
 
 class Search(MacroElement):
     """
@@ -94,18 +98,17 @@ class Search(MacroElement):
             name='Leaflet.Search.css'
         )
 
+with open(os.path.join('', 'geopulses.json')) as f:
+    pulses = json.loads(f.read())
 
+m = folium.Map()
 
+for p in pulses['features']:
+    coord = p['geometry']['coordinates']
+    content = p['properties']['content']
+    pulseid = p['properties']['pulseid']
+    url = "<a href=\"https://cliowire.dhlab.epfl.ch/web/statuses/"+str(pulseid)+"\">"+content+"</a>"
+    folium.Marker(coord, popup=url).add_to(m)
 
-venice_coord = [45.4,12.33]
-m = folium.Map(location=venice_coord)
-venice = "Venice"
-
-# créer un marker avec lequel une box apparait qui contient une url
-
-doges_location = [45.4337, 12.3404]
-url = "<a href=\"https://cliowire.dhlab.epfl.ch/web/statuses/99018727713161107\">"+venice+"</a>"
-folium.Marker(doges_location, popup=url).add_to(m)
 
 m.save('MapAppTest.html')
-m
