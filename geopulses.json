@@ -6,28 +6,26 @@
   "features": [
     {
       "type": "Feature",
+      "properties": {
+        "entity": ["Venice", "DHstudents"],
+        "pulseid": "99018727713161107",
+        "content": "DHstudents went to Venice"
+      },
       "geometry": {
         "type": "Point",
-        "coordinates": [45.4337,12.3404]
-      },
-      "properties": {
-        "pulseid": "99018727713161107",
-        "content": "DHstudents went to Venice",
-        "geoentity": "Venice",
-        "otherentity": "DHstudents"
+        "coordinates": [12.3404,45.4337]
       }
     },
     {
       "type": "Feature",
+      "properties": {
+        "entity": ["Paris", "DHstudents"],
+        "pulseid": "98998961990334783",
+        "content": "DHstudents went to Paris"
+      },
       "geometry": {
         "type": "Point",
-        "coordinates": [48.8566,2.3522]
-      },
-      "properties": {
-        "pulseid": "98998961990334783",
-        "content": "DHstudents went to Paris",
-        "geoentity": "Paris",
-        "otherentity": "DHstudents"
+        "coordinates": [2.3522,48.8566]
       }
     }
   ]
