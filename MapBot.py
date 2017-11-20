@@ -3,6 +3,9 @@ from mastodon import Mastodon
 import sys
 import os
 import json
+import copy
+
+testContentPulse = "#geoCoords(12.3404, 45.4337) DHstudents went to #GeoEntity (Venice https://en.wikipedia.org/wiki/Venice)"
 
 APP_NAME = 'MapBot'
 BOT_LOGIN = 'viaccoz'
@@ -47,8 +50,49 @@ def openGeoPulsesFile():
     pass
 
 def contentBreakDown(content):
-    #TODO : parse content to extract the coordinates, the named entities, and a clean version of the pulse's content (without balises, and named entitities URL)
-    pass
+    '''
+        Convention of the geoPulse : format (in regex like descritpion)
+        "#geoCoords(<coord1>, <coord2>) <content>? [#GeoEntity <nameOfGeoEntity> | (<nameOfGeoEntity> <uriOfGeoEntity>)]+? <content>?"
+        Example :
+        "#geoCoords(12.3404, 45.4337) DHstudents went to #GeoEntity (Venice https://en.wikipedia.org/wiki/Venice)"
+    '''
+    tokens = content.split( )
+    #will stoke processed version of the tokens, to reconstruct the original text
+    purifiedContent = []
+    #we take as principle that every content given in this function, is a content of a geoPulse, with all its convention respected. So the first two tokens should be the coordinates. If this is not the case, an exception is raised.
+    if not tokens[0].startswith(HASH_MARKER):
+        raise Exception("MapBot received a pulse that was not geoparsed ! The operation was aborted.")
+    lng = tokens[0][len(HASH_MARKER)+1:-1]
+    lat = tokens[1][:-1]
+    coordinates = [float(lng), float(lat)]
+    tokens = tokens[2:]
+    entities = []
+    i = 1
+    nmbToks = len(tokens)
+    while i < nmbToks:
+        currTok = copy.deepcopy(tokens[i])
+        precedingTok = tokens[i-1]
+        if precedingTok == '#GeoEntity':
+            i += 1
+            #if the geoEntity is also a named entities, need to remove the first open parenthesis.
+            if currTok[0] == '(':
+                currTok = currTok[1:]
+            entities.append(currTok)
+            purifiedContent.append(currTok)
+        elif(precedingTok[0] == '(' and currTok.startswith('http')):
+            #we encountered a named entities which did not trigger the geoparsing, need to add to entities list.
+            purifiedContent.append(precedingTok[1:])
+            entities.append(precedingTok[1:])
+            i += 1
+        else:
+            #otherwise we just let the content as it is.
+            purifiedContent.append(precedingTok)
+            #with the weird way to scan all the tokey, those lines needed to be to avoid edge cases.
+            if i == nmbToks - 1 and currTok != '#GeoEntity':
+                purifiedContent.append(currTok)
+        i += 1
+
+    return ' '.join(purifiedContent), entities, coordinates
 
 def jsonParse(pulse):
     content, entities, coordinates = contentBreakDown(pulse["content"])
@@ -67,4 +111,4 @@ def jsonParse(pulse):
         }
     })
 
-main(sys.argv)
+#main(sys.argv)
