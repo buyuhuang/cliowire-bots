@@ -98,7 +98,7 @@ class Search(MacroElement):
             name='Leaflet.Search.css'
         )
 
-with open(os.path.join('', 'geopulses.json')) as f:
+with open(os.path.join('data', 'geopulses.json')) as f:
     pulses = json.loads(f.read())
 
 m = folium.Map()

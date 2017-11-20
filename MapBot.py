@@ -4,14 +4,15 @@ import sys
 import os
 import json
 import copy
-
-testContentPulse = "#geoCoords(12.3404, 45.4337) DHstudents went to #GeoEntity (Venice https://en.wikipedia.org/wiki/Venice)"
+import io
 
 APP_NAME = 'MapBot'
 BOT_LOGIN = 'viaccoz'
 BOT_PSWD = 'reallygoodpassword'
 HASH_MARKER = '#geoCoords'
 FINAL_PULSE = 'Today, {} pulses were geoparsed and then added to the map of GeoPulses !'
+
+GEOJSON_FILEPATH = 'data/geopulses.json'
 
 GEOJSON_PRE = "{\"type\": \"FeatureCollection\",\"generator\": \"overpass-turbo\",\"copyright\": \"2017, EPFL \",\"timestamp\": \"2017-11-20T13:03:02Z\",\"features\": ["
 
@@ -23,31 +24,35 @@ def main(args):
 
     cliowireConn = credentials.log_in(APP_NAME, BOT_LOGIN, BOT_PSWD)
 
+    #geopulses = []
+    #eopulses.append({"id": 1, "content":"#geoCoords(12.3404, 45.4337) DHstudents went to #GeoEntity (Venice https://en.wikipedia.org/wiki/Venice)"})
+    #geopulses.append({"id": 2, "content":"#geoCoords(2.3522, 48.8566) #GeoEntity (Paris https://en.wikipedia.org/wiki/Paris) is a nice city"})
     geopulses = getPulses.retrieve(hashtag=HASH_MARKER)
-
-    geoJsonFile = openGeoPulsesFile()
 
     toWrite = ''
 
 
     for p in geopulses:
-        pJson = jsonParse(p)
-        toWrite.append(pJson+',')
+        toWrite += jsonParse(p)
+        toWrite += ','
 
-    nmbOfPulses = len(geopulses)
-
-    if nmbOfPulses >0:
-        toWrite = toWrite[:-1]
-    geoJsonFile.write(toWrite.append(GEOJSON_POST))
+    #remove trailing comma
+    toWrite = toWrite[:-1]
+    f = writeGeoPulses(GEOJSON_FILEPATH, toWrite)
+    f.close()
 
     postPulses.post_content(cliowireConn, FINAL_PULSE.format(nmbOfPulses))
 
 
+def writeGeoPulses(filepath, pulsesToWrite):
+    if os.path.isfile(filepath):
+        #TODO write
+        pass
+    else:
+        f = open(filepath, 'w+')
+        f.write(GEOJSON_PRE+pulsesToWrite+GEOJSON_POST)
+        return f
 
-
-def openGeoPulsesFile():
-    #TODO open the file of geoJson entities in append mode (which means it ), if it does no exist, create it.
-    pass
 
 def contentBreakDown(content):
     '''
@@ -77,6 +82,8 @@ def contentBreakDown(content):
             #if the geoEntity is also a named entities, need to remove the first open parenthesis.
             if currTok[0] == '(':
                 currTok = currTok[1:]
+                #We need to skip the uri as well.
+                i += 1
             entities.append(currTok)
             purifiedContent.append(currTok)
         elif(precedingTok[0] == '(' and currTok.startswith('http')):
@@ -111,4 +118,4 @@ def jsonParse(pulse):
         }
     })
 
-#main(sys.argv)
+main(sys.argv)

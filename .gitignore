@@ -3,3 +3,4 @@ data
 results
 *.html
 credentials
+clioServer/__pycache__
