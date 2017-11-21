@@ -24,30 +24,40 @@ def main(args):
 
     cliowireConn = credentials.log_in(APP_NAME, BOT_LOGIN, BOT_PSWD)
 
-    #geopulses = []
-    #eopulses.append({"id": 1, "content":"#geoCoords(12.3404, 45.4337) DHstudents went to #GeoEntity (Venice https://en.wikipedia.org/wiki/Venice)"})
-    #geopulses.append({"id": 2, "content":"#geoCoords(2.3522, 48.8566) #GeoEntity (Paris https://en.wikipedia.org/wiki/Paris) is a nice city"})
     geopulses = getPulses.retrieve(hashtag=HASH_MARKER)
 
     toWrite = ''
 
+    if len(geopulses) > 0:
+        for p in geopulses:
+            toWrite += jsonParse(p)
+            toWrite += ','
 
-    for p in geopulses:
-        toWrite += jsonParse(p)
-        toWrite += ','
+        #remove trailing comma
 
-    #remove trailing comma
-    toWrite = toWrite[:-1]
-    f = writeGeoPulses(GEOJSON_FILEPATH, toWrite)
-    f.close()
+        toWrite = toWrite[:-1]
+        f = writeGeoPulses(GEOJSON_FILEPATH, toWrite)
+        f.close()
 
-    postPulses.post_content(cliowireConn, FINAL_PULSE.format(nmbOfPulses))
+        postPulses.post_content(cliowireConn, FINAL_PULSE.format(nmbOfPulses))
+    else:
+        print("No new geopulses were detected on the platform.\nNo actions were performed on the map.")
 
 
 def writeGeoPulses(filepath, pulsesToWrite):
     if os.path.isfile(filepath):
-        #TODO write
-        pass
+        #this way of doing might not be feasible once the file gets too big.
+        #really need a way to erase two last char of a JSON file.
+        f = open(filepath, 'r')
+        data = f.readlines()
+        data[0] = data[0][:-len(GEOJSON_POST)]
+        data[0] += ','
+        data[0] += pulsesToWrite
+        data[0] += GEOJSON_POST
+        f.close()
+        f = open(filepath, 'w')
+        f.write(data[0])
+        return f
     else:
         f = open(filepath, 'w+')
         f.write(GEOJSON_PRE+pulsesToWrite+GEOJSON_POST)
@@ -64,7 +74,10 @@ def contentBreakDown(content):
     tokens = content.split( )
     #will stoke processed version of the tokens, to reconstruct the original text
     purifiedContent = []
-    #we take as principle that every content given in this function, is a content of a geoPulse, with all its convention respected. So the first two tokens should be the coordinates. If this is not the case, an exception is raised.
+    ''' we take as principle that every content given in this function,
+        is a content of a geoPulse, with all its convention respected.
+        So the first two tokens should be the coordinates. If this is not
+        the case, an exception is raised.'''
     if not tokens[0].startswith(HASH_MARKER):
         raise Exception("MapBot received a pulse that was not geoparsed ! The operation was aborted.")
     lng = tokens[0][len(HASH_MARKER)+1:-1]
