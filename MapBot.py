@@ -32,7 +32,7 @@ def main(args):
     if len(geopulses) > 0:
         for p in geopulses:
             cleanContent = cleanHTTP(p['content'])
-            toWrite += jsonParse(cleanContet)
+            toWrite += jsonParse(cleanContent, p['id'])
             toWrite += ','
 
         #remove trailing comma
@@ -46,13 +46,13 @@ def main(args):
 
 
 def cleanHTTP(content):
-    #TODO clean all HTTP markups with a regex like under there, but don't clean the http links.
-    '''def cleanhtml(raw_html):
-        cleanr = re.compile('<.*?>')
-        cleantext = re.sub(cleanr, '', raw_html)
-        return cleantext
-    '''
-    pass
+    #Remove href balises, but keep the url
+    cleanHref = re.compile('<a[^>]+href=\"(.*?)\"[^>]*>')
+    #Remove every other http balises
+    cleanr = re.compile('<.*?>')
+    cleantext = re.sub(cleanHref, '', content)
+    cleantext = re.sub(cleanr, '', cleantext)
+    return cleantext
 
 def writeGeoPulses(filepath, pulsesToWrite):
     if os.path.isfile(filepath):
@@ -88,9 +88,9 @@ def contentBreakDown(content):
         is a content of a geoPulse, with all its convention respected.
         So the first two tokens should be the coordinates. If this is not
         the case, an exception is raised.'''
-    if not tokens[0].startswith(HASH_MARKER):
+    if not tokens[0].startswith('#'+HASH_MARKER):
         raise Exception("MapBot received a pulse that was not geoparsed ! The operation was aborted.")
-    lng = tokens[0][len(HASH_MARKER)+1:-1]
+    lng = tokens[0][len(HASH_MARKER)+2:-1]
     lat = tokens[1][:-1]
     coordinates = [float(lng), float(lat)]
     tokens = tokens[2:]
@@ -124,9 +124,8 @@ def contentBreakDown(content):
 
     return ' '.join(purifiedContent), entities, coordinates
 
-def jsonParse(pulse):
-    content, entities, coordinates = contentBreakDown(pulse["content"])
-    pulseId = str(pulse["id"])
+def jsonParse(pulse, pulseId):
+    content, entities, coordinates = contentBreakDown(pulse)
     #this below is the jsonGeoPulse format we're using. Coordinates must be a list/array of 2 floats, entities a list/array of string, everything else Strings.
     return json.dumps({
         "type": "Feature",
