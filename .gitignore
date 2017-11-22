@@ -2,3 +2,6 @@
 data
 results
 *.html
+credentials
+*.secret
+clioServer/__pycache__
