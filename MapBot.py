@@ -11,7 +11,7 @@ APP_NAME = 'MapBot'
 BOT_LOGIN = 'cedric.viaccoz@epfl.ch'
 BOT_PSWD = 'reallygoodpassword'
 HASH_MARKER = 'geoCoords'
-FINAL_PULSE = 'Today, {} pulses were geoparsed and then added to the map of GeoPulses !'
+FINAL_PULSE = 'Today, {0} pulses were geoparsed and then added to the map of GeoPulses !'
 
 GEOJSON_FILEPATH = 'data/geopulses.json'
 
@@ -29,7 +29,9 @@ def main(args):
 
     toWrite = ''
 
-    if len(geopulses) > 0:
+    nmbOfPulses = len(geopulses)
+
+    if nmbOfPulses > 0:
         for p in geopulses:
             cleanContent = cleanHTTP(p['content'])
             toWrite += jsonParse(cleanContent, p['id'])
@@ -40,7 +42,7 @@ def main(args):
         f = writeGeoPulses(GEOJSON_FILEPATH, toWrite)
         f.close()
 
-        postPulses.post_content(cliowireConn, FINAL_PULSE.format(nmbOfPulses))
+        postPulses.post_content(cliowireConn, [FINAL_PULSE.format(nmbOfPulses)])
     else:
         print("No new geopulses were detected on the platform.\nNo actions were performed on the map.")
 
