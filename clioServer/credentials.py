@@ -3,6 +3,7 @@ import sys
 import os
 
 DOMAIN_NAME='https://cliowire.dhlab.epfl.ch'
+
 CLIENT_CRED='_clientcred.secret'
 USER_CRED='_usercred.secret'
 
@@ -34,5 +35,6 @@ def log_in(appName, userLogin, userPswd):
     )
 
 def checkIfCredentials(appName):
-    #TODO check if credentials were created, if so then everything alright, if not, must create them.
-    pass
+    filepath = appName+CLIENT_CRED
+    if not os.path.isfile(filepath):
+        register_app(appName)

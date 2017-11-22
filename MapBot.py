@@ -1,15 +1,16 @@
-from clioServer import credentials, getPulses, postPulses
+from clioServer import credentials, postPulses
 from mastodon import Mastodon
 import sys
 import os
 import json
 import copy
 import io
+import re
 
 APP_NAME = 'MapBot'
-BOT_LOGIN = 'viaccoz'
+BOT_LOGIN = 'cedric.viaccoz@epfl.ch'
 BOT_PSWD = 'reallygoodpassword'
-HASH_MARKER = '#geoCoords'
+HASH_MARKER = 'geoCoords'
 FINAL_PULSE = 'Today, {} pulses were geoparsed and then added to the map of GeoPulses !'
 
 GEOJSON_FILEPATH = 'data/geopulses.json'
@@ -24,17 +25,17 @@ def main(args):
 
     cliowireConn = credentials.log_in(APP_NAME, BOT_LOGIN, BOT_PSWD)
 
-    geopulses = getPulses.retrieve(hashtag=HASH_MARKER)
+    geopulses = cliowireConn.timeline_hashtag(HASH_MARKER, local=True)
 
     toWrite = ''
 
     if len(geopulses) > 0:
         for p in geopulses:
-            toWrite += jsonParse(p)
+            cleanContent = cleanHTTP(p['content'])
+            toWrite += jsonParse(cleanContet)
             toWrite += ','
 
         #remove trailing comma
-
         toWrite = toWrite[:-1]
         f = writeGeoPulses(GEOJSON_FILEPATH, toWrite)
         f.close()
@@ -43,6 +44,15 @@ def main(args):
     else:
         print("No new geopulses were detected on the platform.\nNo actions were performed on the map.")
 
+
+def cleanHTTP(content):
+    #TODO clean all HTTP markups with a regex like under there, but don't clean the http links.
+    '''def cleanhtml(raw_html):
+        cleanr = re.compile('<.*?>')
+        cleantext = re.sub(cleanr, '', raw_html)
+        return cleantext
+    '''
+    pass
 
 def writeGeoPulses(filepath, pulsesToWrite):
     if os.path.isfile(filepath):
