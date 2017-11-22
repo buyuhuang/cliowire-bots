@@ -11,6 +11,7 @@
         "coordinates": [12.3404, 45.4337]
       },
       "properties": {
+        "entity": ["Venice", "DHstudents"],
         "pulseid": "99018727713161107",
         "content": "DHstudents went to Venice",
         "entities": ["Venice", "DHstudents"]
@@ -23,6 +24,7 @@
         "coordinates": [2.3522, 48.8566]
       },
       "properties": {
+        "entity": ["Paris", "DHstudents"],
         "pulseid": "98998961990334783",
         "content": "DHstudents went to Paris",
         "entities": ["Paris", "DHstudents"]
