@@ -103,8 +103,14 @@ with open(os.path.join('data', 'geopulses.json')) as f:
 #generating map on which to add infos
 m = folium.Map()
 
+lat_max = -91
+lat_min = 91
+long_max = -181
+long_min = 181
+
 #adding a search bar, and indexing the pulses according to their name entities.
 Search(pulses, search_label='entities', search_zoom=12).add_to(m)
+
 
 #adding a marker with popup to the place of the pulses.
 for pulse in pulses['features']:
@@ -115,5 +121,18 @@ for pulse in pulses['features']:
     pulseid = p['pulseid']
     url = "<a href=\"https://cliowire.dhlab.epfl.ch/web/statuses/"+str(pulseid)+"\">"+content+"</a>"
     folium.Marker(invCoord, popup=url).add_to(m)
+
+    lat = coord[1]
+    long = coord[0]
+    if lat>lat_max:
+        lat_max = lat
+    if lat<lat_min:
+        lat_min = lat
+    if long>long_max:
+        long_max = long
+    if long<long_min:
+        long_min = long
+
+m.fit_bounds([[lat_min, long_min],[lat_max, long_max]])
 
 m.save('MapAppTest.html')
