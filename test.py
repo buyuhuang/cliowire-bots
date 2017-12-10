@@ -37,6 +37,13 @@ assert ents == ['Paris', 'Mentions', 'DubiousPulse']
 assert cont == "#Paris is a nice city #Mentions #DubiousPulse"
 assert coords == [2.3522, 48.4337]
 
+#Test that negative coordinates of a pulse work.
+cont, ents, coords = contentBreakDown("#London is a pretty hype place to be #geocoding #pM0_1257_51_5085")
+assert ents == ['London']
+assert cont == "#London is a pretty hype place to be"
+assert coords == [-0.1257, 51.5085]
+
+
 
 #test that an exception is raised when the coordinates are not correctly formated
 try:

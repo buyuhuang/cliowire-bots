@@ -1,5 +1,6 @@
 from clioServer import credentials, postPulses
 from mastodon import Mastodon
+from cliowireUtils import Pulse, PulseIterator
 import sys
 import os
 import json
@@ -11,7 +12,7 @@ APP_NAME = 'MapBot'
 BOT_LOGIN = 'cedric.viaccoz@gmail.com'
 BOT_PSWD = 'fdh123456'
 HASH_MARKER = 'geocoding'
-FINAL_PULSE = 'Today, {0} pulses were geoparsed and then added to the map of GeoPulses !'
+FINAL_PULSE = 'Today, {0} pulses were geocoded and then added to the map of GeoPulses !'
 
 GEOJSON_FILEPATH = 'data/geopulses.json'
 
@@ -25,7 +26,7 @@ def main(args):
 
     cliowireConn = credentials.log_in(APP_NAME, BOT_LOGIN, BOT_PSWD)
 
-    geopulses = cliowireConn.timeline_hashtag(HASH_MARKER, local=True)
+    CWIter = PulseIterator(cliowireConn, batch_size=3, hashtag=HASH_MARKER, recent_id=None, oldest_id=99138160347369032)
 
     toWrite = ''
 
@@ -92,8 +93,8 @@ def contentBreakDown(content):
             undSS = removeP.split('_')
             if len(undSS) != 4:
                 raise Exception('The coordinate in this geocoded pulse : \"{}\" were malformed'.format(content))
-            lng = float(str(undSS[0] + '.' + undSS[1]))
-            lat = float(str(undSS[2] + '.' + undSS[3]))
+            lng = coordToFloat(undSS[0], undSS[1])
+            lat = coordToFloat(undSS[2], undSS[3])
             coordinates.append(lng)
             coordinates.append(lat)
         elif t.startswith('#') and not t == '#geocoding':
@@ -120,5 +121,12 @@ def jsonParse(pulse, pulseId):
             "entities": entities
         }
     })
+
+def coordToFloat(decim, unit):
+    res = 1
+    if decim[0] == 'm' or decim[0] == 'M':
+        res *= -1
+        decim = decim[1:]
+    return res * float(str(decim + '.' + unit))
 
 #main(sys.argv)
