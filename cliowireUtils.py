@@ -11,6 +11,8 @@ class Pulse:
         self.reply_to_id=reply_to_id
         self.content=content
 
+    def tootToPulse(toot):
+        return Pulse(toot['id'], toot['content'], toot['in_reply_to_id'])
 '''
 Iterator that will retrieve pulses in a batch each time its next method is
 called. Produce the illusion that all the pulses querried are in the RAM, while in
