@@ -1,5 +1,6 @@
 from clioServer import credentials, postPulses
 from mastodon import Mastodon
+from cliowireUtils import Pulse, PulseIterator
 import sys
 import os
 import json
@@ -7,13 +8,17 @@ import copy
 import io
 import re
 
-APP_NAME = 'MapBot'
-BOT_LOGIN = 'cedric.viaccoz@epfl.ch'
-BOT_PSWD = 'reallygoodpassword'
-HASH_MARKER = 'geoCoords'
-FINAL_PULSE = 'Today, {0} pulses were geoparsed and then added to the map of GeoPulses !'
 
-GEOJSON_FILEPATH = 'data/geopulses.json'
+#constants of the program
+APP_NAME = 'MapBot'
+BOT_LOGIN = 'cedric.viaccoz@gmail.com'
+BOT_PSWD = 'fdh123456'
+DATA_FOLDER = 'data/'
+HASH_MARKER = 'geocoding'
+FINAL_PULSE = 'Today, {0} pulse(s) were geocoded and then added to the map of GeoPulses !'
+METADATA_FILE = DATA_FOLDER + APP_NAME + '_metadata.info'
+
+GEOJSON_FILEPATH = DATA_FOLDER+'geopulses.json'
 
 GEOJSON_PRE = "{\"type\": \"FeatureCollection\",\"generator\": \"overpass-turbo\",\"copyright\": \"2017, EPFL \",\"timestamp\": \"2017-11-20T13:03:02Z\",\"features\": ["
 
@@ -21,31 +26,48 @@ GEOJSON_POST = "]}"
 
 def main(args):
 
+    #need to create the data directory
+    if not os.path.exists(DATA_FOLDER):
+        os.makedirs(DATA_FOLDER)
+
     credentials.checkIfCredentials(APP_NAME)
 
     cliowireConn = credentials.log_in(APP_NAME, BOT_LOGIN, BOT_PSWD)
 
-    geopulses = cliowireConn.timeline_hashtag(HASH_MARKER, local=True)
+    last_id=0
+
+    #we retrieve the id of the last treated geopulse, to avoid rereading every geopulse
+    if os.path.isfile(METADATA_FILE):
+        f = open(METADATA_FILE, 'r')
+        last_id = int(f.readline())
+        f.close()
+
+    CWIter = PulseIterator(cliowireConn, hashtag=HASH_MARKER, oldest_id=last_id)
 
     toWrite = ''
 
-    nmbOfPulses = len(geopulses)
+    #to determine wether new pulses were retrieved, and keep track of how much we're going to add to the map.
+    nmbOfPulses = 0
 
-    if nmbOfPulses > 0:
+    for geopulses in CWIter:
         for p in geopulses:
-            cleanContent = cleanHTTP(p['content'])
-            toWrite += jsonParse(cleanContent, p['id'])
+            cleanContent = cleanHTTP(p.content)
+            toWrite += jsonParse(cleanContent, int(p.id))
             toWrite += ','
+            nmbOfPulses += 1
 
-        #remove trailing comma
+    if nmbOfPulses == 0:
+        print("No new geopulses were detected on the platform.\nNo actions were performed on the map.")
+    else:
+        #remove trailing commas
         toWrite = toWrite[:-1]
         f = writeGeoPulses(GEOJSON_FILEPATH, toWrite)
         f.close()
-
+        #we need to save the last id that we have
+        fmeta = open(METADATA_FILE, 'w')
+        fmeta.write(str(CWIter.latest_id))
+        fmeta.close()
         postPulses.post_content(cliowireConn, [FINAL_PULSE.format(nmbOfPulses)])
-    else:
-        print("No new geopulses were detected on the platform.\nNo actions were performed on the map.")
-
 
 def cleanHTTP(content):
     #Remove href balises, but keep the url
@@ -78,53 +100,32 @@ def writeGeoPulses(filepath, pulsesToWrite):
 
 def contentBreakDown(content):
     '''
-        Convention of the geoPulse : format (in regex like descritpion)
-        "#geoCoords(<coord1>, <coord2>) <content>? [#GeoEntity <nameOfGeoEntity> | (<nameOfGeoEntity> <uriOfGeoEntity>)]+? <content>?"
-        Example :
-        "#geoCoords(12.3404, 45.4337) DHstudents went to #GeoEntity (Venice https://en.wikipedia.org/wiki/Venice)"
+    takes the content of the pulse (cleaned from all the HTTP useless scraps), and produces
+    the content without the hashtags refering to the geocoding part, then the list of entities
+    and finally the tuples of geocoordinate (latitude and longitude)
     '''
-    tokens = content.split( )
-    #will stoke processed version of the tokens, to reconstruct the original text
-    purifiedContent = []
-    ''' we take as principle that every content given in this function,
-        is a content of a geoPulse, with all its convention respected.
-        So the first two tokens should be the coordinates. If this is not
-        the case, an exception is raised.'''
-    if not tokens[0].startswith('#'+HASH_MARKER):
-        raise Exception("MapBot received a pulse that was not geoparsed ! The operation was aborted.")
-    lng = tokens[0][len(HASH_MARKER)+2:-1]
-    lat = tokens[1][:-1]
-    coordinates = [float(lng), float(lat)]
-    tokens = tokens[2:]
+    tokens = content.split(' ')
+    filteredContent = []
     entities = []
-    i = 1
-    nmbToks = len(tokens)
-    while i < nmbToks:
-        currTok = copy.deepcopy(tokens[i])
-        precedingTok = tokens[i-1]
-        if precedingTok == '#GeoEntity':
-            i += 1
-            #if the geoEntity is also a named entities, need to remove the first open parenthesis.
-            if currTok[0] == '(':
-                currTok = currTok[1:]
-                #We need to skip the uri as well.
-                i += 1
-            entities.append(currTok)
-            purifiedContent.append(currTok)
-        elif(precedingTok[0] == '(' and currTok.startswith('http')):
-            #we encountered a named entities which did not trigger the geoparsing, need to add to entities list.
-            purifiedContent.append(precedingTok[1:])
-            entities.append(precedingTok[1:])
-            i += 1
-        else:
-            #otherwise we just let the content as it is.
-            purifiedContent.append(precedingTok)
-            #with the weird way to scan all the tokey, those lines needed to be to avoid edge cases.
-            if i == nmbToks - 1 and currTok != '#GeoEntity':
-                purifiedContent.append(currTok)
-        i += 1
+    coordinates = []
+    for t in tokens:
+        if t.startswith('#p'):
+            removeP = t[2:]
+            undSS = removeP.split('_')
+            if len(undSS) != 4:
+                raise Exception('The coordinate in this geocoded pulse : \"{}\" were malformed'.format(content))
+            lng = coordToFloat(undSS[0], undSS[1])
+            lat = coordToFloat(undSS[2], undSS[3])
+            coordinates.append(lng)
+            coordinates.append(lat)
+        elif t.startswith('#') and not t == '#geocoding':
+            entities.append(t[1:])
+            filteredContent.append(t)
+        elif t != '#geocoding':
+            filteredContent.append(t)
 
-    return ' '.join(purifiedContent), entities, coordinates
+    purifiedContent = ' '.join(filteredContent)
+    return purifiedContent, entities, coordinates
 
 def jsonParse(pulse, pulseId):
     content, entities, coordinates = contentBreakDown(pulse)
@@ -141,5 +142,12 @@ def jsonParse(pulse, pulseId):
             "entities": entities
         }
     })
+
+def coordToFloat(decim, unit):
+    res = 1
+    if decim[0] == 'm' or decim[0] == 'M':
+        res *= -1
+        decim = decim[1:]
+    return res * float(str(decim + '.' + unit))
 
 main(sys.argv)
