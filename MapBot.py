@@ -1,6 +1,6 @@
 from clioServer import credentials, postPulses
 from mastodon import Mastodon
-from cliowireUtils import Pulse, PulseIterator
+from cliowireUtils import Pulse, PulseIterator, retrieveBotsMetadata, updateBotsMetadata
 import sys
 import os
 import json
@@ -16,7 +16,7 @@ BOT_PSWD = 'fdh123456'
 DATA_FOLDER = 'data/'
 HASH_MARKER = 'geocoding'
 FINAL_PULSE = 'Today, {0} pulse(s) were geocoded and then added to the map of GeoPulses !'
-METADATA_FILE = DATA_FOLDER + APP_NAME + '_metadata.info'
+
 
 GEOJSON_FILEPATH = DATA_FOLDER+'geopulses.json'
 
@@ -26,21 +26,19 @@ GEOJSON_POST = "]}"
 
 def main(args):
 
-    #need to create the data directory
-    if not os.path.exists(DATA_FOLDER):
-        os.makedirs(DATA_FOLDER)
+    bot_login, bot_pswd, last_id, file_name = None, None, None, None
+    try:
+        bot_login, bot_pswd, last_id = retrieveBotsMetadata(args[1:])
+    except Exception as exc:
+        print('\n'+str(exc)+'\n')
+        sys.exit(1)
 
-    credentials.checkIfCredentials(APP_NAME)
+    print(bot_login)
+    print(bot_pswd)
+    file_name = args[1]
+    credentials.checkIfCredentials(file_name)
 
-    cliowireConn = credentials.log_in(APP_NAME, BOT_LOGIN, BOT_PSWD)
-
-    last_id=0
-
-    #we retrieve the id of the last treated geopulse, to avoid rereading every geopulse
-    if os.path.isfile(METADATA_FILE):
-        f = open(METADATA_FILE, 'r')
-        last_id = int(f.readline())
-        f.close()
+    cliowireConn = credentials.log_in(file_name, bot_login, bot_pswd)
 
     CWIter = PulseIterator(cliowireConn, hashtag=HASH_MARKER, oldest_id=last_id)
 
@@ -64,9 +62,7 @@ def main(args):
         f = writeGeoPulses(GEOJSON_FILEPATH, toWrite)
         f.close()
         #we need to save the last id that we have
-        fmeta = open(METADATA_FILE, 'w')
-        fmeta.write(str(CWIter.latest_id))
-        fmeta.close()
+        updateBotsMetadata(file_name, last_id)
         postPulses.post_content(cliowireConn, [FINAL_PULSE.format(nmbOfPulses)])
 
 def cleanHTTP(content):

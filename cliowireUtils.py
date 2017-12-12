@@ -1,5 +1,47 @@
 import mastodon
 import math
+import os
+import path
+
+METAFILE_PATTERN='\n The file of bot login should hold at least those two informations in the following order : \n<bot\'s login>\n<bot\'s username>\n\n Make sure they are correctly separated by a line break\n Do not delete this file after using the bot, as it will hold metainformations relevant to the bot internal workings for further uses'
+
+def retrieveBotsMetadata(args):
+    if len(args) == 0:
+        print()
+        raise Exception('[ERROR] You need to provide the name of the file which holds'+
+                ' the bot login informations as the first argument of this program')
+    else:
+        filename = args[0]
+        if not os.path.isfile(filename):
+            raise Exception('[ERROR] The file name you specified refer'+
+                    ' to a non existent file. Please create such'+
+                    ' a file follwing this pattern : '+METAFILE_PATTERN)
+        else:
+            f = open(filename, 'r')
+            lines = f.readlines()
+            if len(lines) < 2:
+                f.close()
+                raise Exception('[ERROR] The file given as argument did not hold'+
+                    ' the required informations. Please make sure your file '+
+                    'conform to this patter : '+METAFILE_PATTERN)
+
+            login = lines[0].replace('\n', '')
+            pswd = lines[1].replace('\n', '')
+            last_id = None
+            if len(lines) > 2:
+                lasst_id = int(lines[3])
+            f.close()
+            return login, pswd, last_id
+
+
+def updateBotsMetadata(filename, last_id):
+    f = open(filename, 'r')
+    lines = f.readlines()
+    lines[3] = str(last_id)
+    f.close()
+    f = open(filename, 'w')
+    f.write('\n'.join(lines))
+    f.close()
 
 '''
 Small class that is a downsampled object representation of pulses retrived on
