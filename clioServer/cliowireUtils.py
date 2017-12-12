@@ -3,11 +3,10 @@ import math
 import os
 import path
 
-METAFILE_PATTERN='\n The file of bot login should hold at least those two informations in the following order : \n<bot\'s login>\n<bot\'s username>\n\n Make sure they are correctly separated by a line break\n Do not delete this file after using the bot, as it will hold metainformations relevant to the bot internal workings for further uses'
+METAFILE_PATTERN='\n The file of bot logins should hold at least those two informations in the following order : \n<bot\'s login>\n<bot\'s username>\n\n Make sure they are correctly separated by a line break\n Do not delete this file after using the bot, as it will hold metainformations relevant to the bot internal workings for further uses'
 
 def retrieveBotsMetadata(args):
     if len(args) == 0:
-        print()
         raise Exception('[ERROR] You need to provide the name of the file which holds'+
                 ' the bot login informations as the first argument of this program')
     else:
@@ -29,7 +28,7 @@ def retrieveBotsMetadata(args):
             pswd = lines[1].replace('\n', '')
             last_id = None
             if len(lines) > 2:
-                lasst_id = int(lines[3])
+                last_id = int(lines[2].replace('\n', ''))
             f.close()
             return login, pswd, last_id
 
@@ -37,10 +36,16 @@ def retrieveBotsMetadata(args):
 def updateBotsMetadata(filename, last_id):
     f = open(filename, 'r')
     lines = f.readlines()
-    lines[3] = str(last_id)
+    if len(lines) <= 2:
+        #this branch will be reached if it's the first time the bot is launched
+        lines.append(str(last_id))
+    else:
+        lines[2] = str(last_id)
+    for l in lines:
+        l.replace('\n', '')
     f.close()
     f = open(filename, 'w')
-    f.write('\n'.join(lines))
+    f.write(''.join(lines))
     f.close()
 
 '''
@@ -96,8 +101,8 @@ class PulseIterator():
                 pulses.append(nP)
         return pulses
 
-    def __latest_id__(self):
-        return self.latest_id
+    def latest_id(self):
+        return self.curr
 
 
     def retrieve_pulses(self, recent_id):

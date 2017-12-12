@@ -1,6 +1,5 @@
-from clioServer import credentials, postPulses
+from clioServer import credentials, postPulses, cliowireUtils as cU
 from mastodon import Mastodon
-from cliowireUtils import Pulse, PulseIterator, retrieveBotsMetadata, updateBotsMetadata
 import sys
 import os
 import json
@@ -11,8 +10,6 @@ import re
 
 #constants of the program
 APP_NAME = 'MapBot'
-BOT_LOGIN = 'cedric.viaccoz@gmail.com'
-BOT_PSWD = 'fdh123456'
 DATA_FOLDER = 'data/'
 HASH_MARKER = 'geocoding'
 FINAL_PULSE = 'Today, {0} pulse(s) were geocoded and then added to the map of GeoPulses !'
@@ -26,21 +23,20 @@ GEOJSON_POST = "]}"
 
 def main(args):
 
-    bot_login, bot_pswd, last_id, file_name = None, None, None, None
+    bot_login, bot_pswd, last_id, file_name = None, None, None, None #BATMAAAAAAAN
     try:
-        bot_login, bot_pswd, last_id = retrieveBotsMetadata(args[1:])
+        bot_login, bot_pswd, last_id = cU.retrieveBotsMetadata(args[1:])
     except Exception as exc:
+        #print the error message for the user to understand what atrocity he did
         print('\n'+str(exc)+'\n')
         sys.exit(1)
-
-    print(bot_login)
-    print(bot_pswd)
+    #this should not produce an index out of bound error, since it is checked in the try catch above.
     file_name = args[1]
     credentials.checkIfCredentials(file_name)
 
     cliowireConn = credentials.log_in(file_name, bot_login, bot_pswd)
 
-    CWIter = PulseIterator(cliowireConn, hashtag=HASH_MARKER, oldest_id=last_id)
+    CWIter = cU.PulseIterator(cliowireConn, hashtag=HASH_MARKER, oldest_id=last_id)
 
     toWrite = ''
 
@@ -54,6 +50,9 @@ def main(args):
             toWrite += ','
             nmbOfPulses += 1
 
+    #need to update the id of the most recent pulse to allow statefull future computations
+    last_id = CWIter.latest_id
+
     if nmbOfPulses == 0:
         print("No new geopulses were detected on the platform.\nNo actions were performed on the map.")
     else:
@@ -62,7 +61,7 @@ def main(args):
         f = writeGeoPulses(GEOJSON_FILEPATH, toWrite)
         f.close()
         #we need to save the last id that we have
-        updateBotsMetadata(file_name, last_id)
+        cU.updateBotsMetadata(file_name, last_id)
         postPulses.post_content(cliowireConn, [FINAL_PULSE.format(nmbOfPulses)])
 
 def cleanHTTP(content):
@@ -75,6 +74,10 @@ def cleanHTTP(content):
     return cleantext
 
 def writeGeoPulses(filepath, pulsesToWrite):
+    #first need to create the data folder if it is not already present.
+    if not os.path.exists(DATA_FOLDER):
+        os.makedirs(DATA_FOLDER)
+
     if os.path.isfile(filepath):
         #this way of doing might not be feasible once the file gets too big.
         #really need a way to erase two last char of a JSON file.
