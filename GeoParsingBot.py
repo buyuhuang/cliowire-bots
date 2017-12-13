@@ -1,4 +1,5 @@
 import os, sys
+import overpy
 from clioServer import credentials, postPulses, cliowireUtils as cU
 
 #This class is meant to hold information that relate to the account that will get his pulses geoparsed
@@ -11,13 +12,13 @@ class AccountGeoInfos:
 
 #misleading class name, it's a class that bridge the pulse read, and the pulse that will be geocoded.
 class GeoPulse:
-    def __init__(self, pulse):
+    def __init__(self, pulse, ):
         self.pulse = pulse
-        self.geoEntities = None
+        self.geoEntity = None
         self.coords = []
 
     def setEntity(self, ent):
-        self.geoEntities = ent
+        self.geoEntity = ent
 
     def setCoords(lat, lng):
         #the coords need to be reversed, because Leaflet.js.
@@ -25,7 +26,7 @@ class GeoPulse:
         self.coords.append(lat)
 
     #returns a new
-    def duplicate:
+    def duplicate():
         return GeoPulse(self.pulse)
 
 
@@ -35,6 +36,22 @@ sec_sources = AccountGeoInfos(13,'secondary_sources_bot', [0.0000,0.0000], 'en')
 sources = [news_source, sec_sources]
 
 
+def getCoords(type, osmid, api):
+
+    query = "{}({});(._;>;);out{};"
+    if type=='Rel':
+        query.format('relation', osmid, ' center')
+    else:
+        query.format('node', osmid)
+
+    res = api.query(query)
+    if type == 'Rel':
+        rel = res.relations[0]
+        return [rel.center_lon, rel.center_lat]
+    else:
+        node = res.nodes[0]
+        return [node.lon, node.lat]
+    
 def main(args):
     #think to not parse geocoords
     bot_login, bot_pswd, last_id, file_name = None, None, None, None #BATMAAAAAAAN
@@ -55,7 +72,8 @@ def main(args):
     toGeoParse = []
     for batch in CWIter:
         for toot in batch:
-            if toot
+            #if toot
             pulse = cU.Pulse.tootToPulse(toot)
             if not pulse.hashtags.contains('geocoding'):
                 toGeoParse.append(pulse)
+getCoords()
