@@ -1,19 +1,12 @@
 from clioServer import credentials, postPulses, cliowireUtils as cU
 from mastodon import Mastodon
-import sys
-import os
-import json
-import copy
-import io
-import re
-
+import sys, os, json, copy, io, re
 
 #constants of the program
 APP_NAME = 'MapBot'
 DATA_FOLDER = 'data/'
 HASH_MARKER = 'geocoding'
 FINAL_PULSE = 'Today, {0} pulse(s) were geocoded and then added to the map of GeoPulses !'
-
 
 GEOJSON_FILEPATH = DATA_FOLDER+'geopulses.json'
 

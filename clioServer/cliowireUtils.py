@@ -53,13 +53,17 @@ Small class that is a downsampled object representation of pulses retrived on
 ClioWire. Made for the sake of mudalirity, clarity, and for future additions.
 '''
 class Pulse:
-    def __init__(self, id, content, reply_to_id=None):
+    def __init__(self, id, content, reply_to_id=None, hashtags=None):
         self.id=id
         self.reply_to_id=reply_to_id
         self.content=content
+        self.hashtags=[]
+        if hashtags != None:
+            for h in hashtags:
+                self.hashtags.append(h['name'])
 
     def tootToPulse(toot):
-        return Pulse(toot['id'], toot['content'], toot['in_reply_to_id'])
+        return Pulse(toot['id'], toot['content'], toot['in_reply_to_id'], toot['tags'])
 '''
 Iterator that will retrieve pulses in a batch each time its next method is
 called. Produce the illusion that all the pulses querried are in the RAM, while in
