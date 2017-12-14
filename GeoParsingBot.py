@@ -12,7 +12,7 @@ class AccountGeoInfos:
 
 #misleading class name, it's a class that bridge the pulse read, and the pulse that will be geocoded.
 class GeoPulse:
-    def __init__(self, pulse, ):
+    def __init__(self, pulse):
         self.pulse = pulse
         self.geoEntity = None
         self.coords = []
@@ -51,7 +51,7 @@ def getCoords(type, osmid, api):
     else:
         node = res.nodes[0]
         return [node.lon, node.lat]
-    
+
 def main(args):
     #think to not parse geocoords
     bot_login, bot_pswd, last_id, file_name = None, None, None, None #BATMAAAAAAAN
@@ -69,11 +69,13 @@ def main(args):
     cliowireConn = credentials.log_in(file_name, bot_login, bot_pswd)
 
     CWIter = cU.PulseIterator(cliowireConn, oldest_id=last_id)
-    toGeoParse = []
+    GeoPulses = []
+
     for batch in CWIter:
         for toot in batch:
             #if toot
             pulse = cU.Pulse.tootToPulse(toot)
             if not pulse.hashtags.contains('geocoding'):
                 toGeoParse.append(pulse)
+
 getCoords()
