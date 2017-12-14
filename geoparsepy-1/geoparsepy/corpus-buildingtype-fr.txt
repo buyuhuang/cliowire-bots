@@ -1,0 +1,100 @@
+﻿# french
+# place type prefix and suffix
+# these are identified in location names and used for token expansion to include location type variants
+# this gives us the maximum chance of matching a location name to the various ways to express it in text
+# e.g. 'london st' -> 'london street', 'london st'
+
+# TITLE = title word of placename (e.g. 'the')
+# TYPE = type of place (e.g. 'road')
+# +<phrase> = prefix
+# <phrase>+ = suffix
+# +<phrase>+ = can be both prefix and suffix
+# *<phrase> = dont use this token for a match but do include it in token expansion
+#   e.g. primary, *school --> matches only primary BUT will expand a match to <name> primary, <name> school
+#        this allows avoidance of overmatching to general names like school (which can be primary, secondary etc.)
+
+# note: save this as UTF-8 not a default latin encoded text file
+# note: types are processed in reverse phrase gram order (so large phrases are matched first)
+
+# add to stoplist location words that on thier own cannot be a specific location
+# e.g. 'north' cannot be used for 'north london'
+
+
+# place titles like 'the ...' and '... plc'
+TITLE, +le, +la, +les
+TITLE, SA+, +société anonyme+, +frère, et fils+
+TITLE, orga+, orga de+, orga des+, orga du+, orga de la+
+TITLE, organisation+, organisation de+, organisation des+, organisation du+, organisation de la+
+TITLE, groupe+, groupe de+, groupe des+, groupe du+, groupe de la+
+TITLE, société+, société de+, société des+, société du+, société de la+
+TITLE, soc+, soc de+, soc des+, soc du+, soc de la+
+TITLE, gr+, gr de+, gr des+, gr du+, gr de la+
+
+# The French don't really have "take-aways"; they have food 'à emporter' but that's about it
+# You'd have to list the chain itself (e.g., MacDonalds etc)
+TYPE, +flunch
+TYPE, +bar
+TYPE, +bistro
+TYPE, +boîte
+TYPE, +pub
+TYPE, +restaurant, +resto, +restau
+TYPE, +cantine
+TYPE, +snack
+TYPE, +brasserie
+TYPE, +relais, +relais routier
+TYPE, +café
+TYPE, +boulangerie, +patisserie, +pâtisserie, +boucherie, +charcuterie
+
+# You would often just see the name of the hypermarket: e.g.
+# Leclerc, Auchan, Cora, Carrefour, Intermarché etc.
+TYPE, +marché, +supermarché, +hypermarché
+TYPE, +pension, +hôtel, +hotel, +auberge, +aparthotel
+TYPE, +maison
+TYPE, +HLM
+
+# galéries is used as part of the name of a department store (eg., Galéries Lafayette in Paris)
+TYPE, +centre commercial, +galéries
+TYPE, +parking
+TYPE, +musée, +galérie
+TYPE, +camping
+TYPE, +station de lavage, +lavage
+TYPE, +courtage d'assurance, +assurances, +courtier d'assurance
+TYPE, +aire, +aire de service autoroutiers, +station-service
+
+TYPE, +gare, +station, +terminus, +halte, +gare routière, +gare d'autobus, +station de métro, +métro
+TYPE, +aéroport, +aérogare, +aéroport international, +hub, +plateforme aéroportuaire
+TYPE, +port de ferry, +terminal de ferry, +terminal de ferries, +gare maritime
+TYPE, +tunnel
+TYPE, +héliport
+
+# NB these do not always mean the same thing in French
+TYPE, +école, +école maternelle, +crèche, +jardin d'enfants
+TYPE, +primaire, +secondaire, +classes prépas, +hypocagne, +cagne, +math spé, +math sup, +terminale
+TYPE, +lycée, +collège, +fac, +faculté, +université, +polytechnique, +école normale, +école supérieure
+TYPE, +école privée; +école publique
+TYPE, +bibliothèque
+TYPE, +hôpital, +centre hospitalier, +garderie, +centre d'accueil, +consultation externe, +clinique
+
+TYPE, +église, +chappelle 
+TYPE, +cathédrale
+TYPE, +banque, +crédit, +caisse d'épargne
+TYPE, +cour, +tribunal, +cour d'assises, +cour d'appel, +tribunal d'instance, +cour de grande instance, +cour de justice
+TYPE, +avocat, +avoué, +notaire, +juriste
+TYPE, +commissariat, +gendarmerie, +poste de police, +bureau de police
+TYPE, +caserne de pompiers, +caserne de sapeurs-pompiers, +poste d'incendie
+
+TYPE, +maison, +loger,  +apartement
+TYPE, +magasin
+TYPE, +galérie
+TYPE, +marché
+TYPE, +garage
+TYPE, +caserne
+
+TYPE, +stade, +bâtiment, +immeuble
+TYPE, +pension, +motel, +hôtel, +auberge
+TYPE, +taverne
+TYPE, +théâtre
+TYPE, +cinéma, +cinoche, +multisalles, +cinéma multisalles, +ciné
+TYPE, +studio
+TYPE, +centre
+

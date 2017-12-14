@@ -1,0 +1,82 @@
+﻿# english
+# street type prefix and suffix
+# these are identified in location names and used for token expansion to include location type variants
+# this gives us the maximum chance of matching a location name to the various ways to express it in text
+# e.g. 'london st' -> 'london street', 'london st'
+
+# see also http://wiki.openstreetmap.org/wiki/Name_finder:Abbreviations
+
+# TITLE = title word of placename (e.g. 'the')
+# TYPE = type of place (e.g. 'road')
+# +<phrase> = prefix
+# <phrase>+ = suffix
+# +<phrase>+ = can be both prefix and suffix
+# *<phrase> = dont use this token for a match but do include it in token expansion
+#   e.g. primary, *school --> matches only primary BUT will expand a match to <name> primary, <name> school
+#        this allows avoidance of overmatching to general names like school (which can be primary, secondary etc.)
+
+# note: save this as UTF-8 not a default latin encoded text file
+# note: types are processed in reverse phrase gram order (so large phrases are matched first)
+# note: first type match is used and variants expanded (other types ignored if they could also match)
+
+#
+# titles
+#
+
+# add to stoplist location words that on thier own cannot be a specific location
+# e.g. 'north' cannot be used for 'north london'
+TITLE, +northeast+, +north east+
+TITLE, +northwest+, +north west+
+TITLE, +southeast+, +south east+
+TITLE, +southwest+, +south west+
+TITLE, +north+
+TITLE, +south+
+TITLE, +east+
+TITLE, +west+
+TITLE, +greater+
+TITLE, +larger+
+TITLE, +lesser+
+TITLE, +smaller+
+TITLE, +upper+
+TITLE, +lower+
+
+TITLE, roundabout+
+
+#
+# types
+#
+
+TYPE, +avenue+, +ave+, +av+
+
+TYPE, street+, st+
+TYPE, road+, rd+
+TYPE, lane+, ln+
+TYPE, place+, pl+
+TYPE, boulevard+, blvd+
+TYPE, parkway+, pky+, park way+, pkwy+
+TYPE, expressway+, express+, express way+, motorway+, highway+, hwy+, state highway+, state hwy+, freeway+
+TYPE, square+, sq+
+TYPE, plaza+, plz+
+TYPE, court+, ct+
+TYPE, drive+, dr+
+TYPE, crescent+, cres+
+TYPE, terrace+, tce+
+TYPE, close+, cl+
+TYPE, park+
+TYPE, parade+
+TYPE, way+
+TYPE, gardens+, gdns+
+TYPE, grove+
+TYPE, lawn+
+TYPE, mews+
+TYPE, rise+
+TYPE, green+
+TYPE, heights+
+TYPE, hill+
+TYPE, wood+
+TYPE, walk+
+TYPE, valley+
+TYPE, bridge+
+TYPE, flyover+
+TYPE, trail+
+

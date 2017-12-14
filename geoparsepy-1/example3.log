@@ -1,0 +1,111 @@
+logging started
+loading stoplist from /Users/cedricviaccoz/cliowire-bots/geoparsepy-1/geoparsepy/corpus-geo-stoplist-en.txt
+loading whitelist from /Users/cedricviaccoz/cliowire-bots/geoparsepy-1/geoparsepy/corpus-geo-whitelist.txt
+loading building types from /Users/cedricviaccoz/cliowire-bots/geoparsepy-1/geoparsepy/corpus-buildingtype-en.txt
+loading location type corpus /Users/cedricviaccoz/cliowire-bots/geoparsepy-1/geoparsepy/corpus-buildingtype-en.txt
+- 3 unique titles
+- 74 unique types
+loading street types from /Users/cedricviaccoz/cliowire-bots/geoparsepy-1/geoparsepy/corpus-streettype-en.txt
+loading location type corpus /Users/cedricviaccoz/cliowire-bots/geoparsepy-1/geoparsepy/corpus-streettype-en.txt
+- 15 unique titles
+- 32 unique types
+loading admin types from /Users/cedricviaccoz/cliowire-bots/geoparsepy-1/geoparsepy/corpus-admintype-en.txt
+loading location type corpus /Users/cedricviaccoz/cliowire-bots/geoparsepy-1/geoparsepy/corpus-admintype-en.txt
+- 14 unique titles
+- 0 unique types
+loading gazeteer from /Users/cedricviaccoz/cliowire-bots/geoparsepy-1/geoparsepy/gazeteer-en.txt
+caching locations : {'europe_places_poly': [-1, -1], 'europe_places_point': [-1, -1], 'europe_places_line': [-1, -1], 'europe_places_admin': [-1, -1]}
+number of cached locations = 424018
+number of indexed phrases = 732428
+number of indexed geoms = 423638
+Text = hello New York, USA its Bill from Bassett calling
+Location [index 12539 osmid (2218262347L,) @ 1 : 2] = new york
+Location [index 12538 osmid (29457403L,) @ 1 : 2] = new york
+Location [index 19852 osmid (20913294L,) @ 2 : 2] = york
+Location [index 1195 osmid (253067120L,) @ 8 : 8] = bassett
+Disambiguated Location [index 0 osmid (2218262347L,) @ 1 : 2] = New York : http://www.openstreetmap.org/node/2218262347
+Disambiguated Location [index 1 osmid (29457403L,) @ 1 : 2] = New York : http://www.openstreetmap.org/node/29457403
+Disambiguated Location [index 2 osmid (253067120L,) @ 8 : 8] = Bassett : http://www.openstreetmap.org/node/253067120
+Text = live on the BBC Victoria Derbyshire is visiting Derbyshire for an exclusive UK interview
+Location [index 18174 osmid (2288030394L,) @ 4 : 4] = victoria
+Location [index 18173 osmid (525249184L,) @ 4 : 4] = victoria
+Location [index 329559 osmid (460070685L,) @ 4 : 4] = victoria
+Location [index 329556 osmid (385402175L,) @ 4 : 4] = victoria
+Location [index 330551 osmid (277608416L,) @ 4 : 4] = victoria
+Location [index 329561 osmid (463188523L,) @ 4 : 4] = victoria
+Location [index 329560 osmid (462241727L,) @ 4 : 4] = victoria
+Location [index 329558 osmid (447925715L,) @ 4 : 4] = victoria
+Location [index 329557 osmid (435240340L,) @ 4 : 4] = victoria
+Location [index 5003 osmid (302323945L,) @ 8 : 8] = derbyshire
+Disambiguated Location [index 0 osmid (2288030394L,) @ 4 : 4] = Victoria : http://www.openstreetmap.org/node/2288030394
+Disambiguated Location [index 1 osmid (525249184L,) @ 4 : 4] = Victoria : http://www.openstreetmap.org/node/525249184
+Disambiguated Location [index 2 osmid (302323945L,) @ 8 : 8] = Derbyshire : http://www.openstreetmap.org/node/302323945
+Text = Hello, this is bill, your friendly neighbor
+Text = Paris is a nice city
+Location [index 334267 osmid (337692283L,) @ 0 : 0] = paris
+Location [index 47730 osmid (17807753L,) @ 0 : 0] = paris
+Location [index 47731 osmid (986924508L,) @ 0 : 0] = paris
+Text = Hello I am a pulse, it is friday morning
+Text = DHstudents went to Venice.
+Location [index 153598 osmid (64778090L,) @ 3 : 3] = venice
+Text = DHstudents went to Yorkshire.
+Text = DHstudents went to Johannesburg.
+Text = Ernst JUnger était écrivain allemand en 1998 #ErnstJUnger #écrivainallemand #JDG1998-02-21
+Location [index 97190 osmid (240032265L,) @ 0 : 0] = ernst
+Text = Jean Rouaud était écrivain en 1998 #JeanRouaud #écrivain #JDG1998-02-21
+Text = Madeleine Santschi était écrivain suisse en 1998 #MadeleineSantschi #écrivainsuisse #JDG1998-02-26
+Location [index 42632 osmid (371857543L,) @ 0 : 0] = madeleine
+Location [index 57451 osmid (287938469L,) @ 4 : 4] = suisse
+Text = La Suisse est un pays formidable
+Text = La suisse est un pays formidable
+Text = Rapsi was mentionned living in Roma
+Location [index 326486 osmid (385056116L,) @ 5 : 5] = roma
+Location [index 161307 osmid (434531430L,) @ 5 : 5] = roma
+Location [index 161306 osmid (434531640L,) @ 5 : 5] = roma
+Location [index 72844 osmid (427089646L,) @ 5 : 5] = roma
+Location [index 149540 osmid (72959652L,) @ 5 : 5] = roma
+Text = At Geneva lives great People
+Location [index 155713 osmid (33622904L,) @ 1 : 1] = geneva
+Text = Sofia is the capital of Bulgary
+Location [index 330342 osmid (277635079L,) @ 0 : 0] = sofia
+Location [index 371054 osmid (1700083447L,) @ 0 : 0] = sofia
+Location [index 330343 osmid (283556310L,) @ 0 : 0] = sofia
+Text = Athena is close to the Adriatic sea
+Text = Ancona is close to the Adriatic sea
+Location [index 137632 osmid (70978800L,) @ 0 : 0] = ancona
+Text = Sion is a city in Valais
+Location [index 57008 osmid (1705476041L,) @ 0 : 0] = sion
+Location [index 58966 osmid (1298562224L,) @ 5 : 5] = valais
+Text = I would like to recolt some signature for apocalypse
+Text = 13 ways of going to Bern
+Location [index 154760 osmid (18477455L,) @ 5 : 5] = bern
+Text = London is the capital citiy for britannic people
+Location [index 10878 osmid (107775L,) @ 0 : 0] = london
+Location [index 292452 osmid (2407371105L,) @ 0 : 0] = london
+Disambiguated Location [index 0 osmid (107775L,) @ 0 : 0] = London : http://www.openstreetmap.org/node/107775
+Text = Paris, France, is a nice city
+Location [index 334267 osmid (337692283L,) @ 0 : 0] = paris
+Location [index 47730 osmid (17807753L,) @ 0 : 0] = paris
+Location [index 47731 osmid (986924508L,) @ 0 : 0] = paris
+Location [index 32685 osmid (1363947712L,) @ 2 : 2] = france
+Text = Nice is a boarding city of meditteranean sea
+Text = Rome has many colliseum
+Location [index 85586 osmid (43858202L,) @ 0 : 0] = rome
+Location [index 149540 osmid (72959652L,) @ 0 : 0] = rome
+Text = Extreme perturbation are at Padua
+Location [index 147189 osmid (406747508L,) @ 4 : 4] = padua
+Text = Reykjavik holds the summer festival
+Text = Some people lives in Amsterdam
+Location [index 82871 osmid (268396336L,) @ 4 : 4] = amsterdam
+Text = I would like to go to Bremes
+Text = Dresden is located north of Germany
+Location [index 95302 osmid (240076989L,) @ 0 : 0] = dresden
+Location [index 94377 osmid (1683325355L,) @ 5 : 5] = germany
+Text = Pesaro (http://it.wikipedia.org/wiki/Pesaro) is present in book 'Piety and patronage in Renaissance Venice : Bellini, Titian and the Franciscans' by Goffen, Rona at page 3.
+Location [index 147599 osmid (266513166L,) @ 0 : 0] = pesaro
+Location [index 50205 osmid (1866125148L,) @ 10 : 10] = renaissance
+Location [index 153598 osmid (64778090L,) @ 11 : 11] = venice
+Location [index 157385 osmid (208794439L,) @ 22 : 22] = rona
+Location [index 326519 osmid (463184453L,) @ 22 : 22] = rona
+Location [index 14758 osmid (253433264L,) @ 22 : 22] = rona
+Disambiguated Location [index 0 osmid (253433264L,) @ 22 : 22] = Rona : http://www.openstreetmap.org/node/253433264

@@ -1,0 +1,56 @@
+Text = hello New York, USA its Bill from Bassett calling
+Disambiguated Location [index 0 osmid (-61320L,) @ 1 : 2] = New York;NY : http://www.openstreetmap.org/relation/61320
+Disambiguated Location [index 2 osmid (-148838L,) @ 4 : 4] = United States of America;États-Unis d'Amérique;Stati Uniti d'America;US;USA;United States : http://www.openstreetmap.org/relation/148838
+Disambiguated Location [index 7 osmid (253067120L,) @ 8 : 8] = Bassett : http://www.openstreetmap.org/node/253067120
+#worked good (but base example of geoparsepy)
+
+
+Text = live on the BBC Victoria Derbyshire is visiting Derbyshire for an exclusive UK interview
+Disambiguated Location [index 0 osmid (-195384L,) @ 8 : 8] = Derbyshire : http://www.openstreetmap.org/relation/195384
+Disambiguated Location [index 1 osmid (-62149L,) @ 12 : 12] = United Kingdom;Royaume-Uni;Regno Unito;GB;GBR : http://www.openstreetmap.org/relation/62149
+#worked good (but base example of geoparsepy)
+
+
+Text = Hello, this is bill, your friendly neighbor
+#worked good (did not picked up any location)
+
+Text = Paris is a nice city
+#Found two times Paris from france, and 4-5 Paris in USA, could not disambiguate
+
+Text = Hello I'm a pulse, it's friday morning
+#Considered "im" as a location :/
+
+Text = DHstudents went to Venice.
+Disambiguated Location [index 0 osmid (-117980L,) @ 3 : 3] = Venice : http://www.openstreetmap.org/relation/117980
+#disambiguated Venice as a town in FLorida, but Venice from italia was probably not in the db.
+
+Text = DHstudents went to Yorkshire.
+Disambiguated Location [index 0 osmid (-206610L,) @ 3 : 3] = Yorkshire : http://www.openstreetmap.org/relation/206610
+#worked perfectly (but yorkshire was in the db)
+
+Text = DHstudents went to Johannesburg.
+#did not work (But expected, african cities were not in the db)
+
+Text = Ernst JUnger était écrivain allemand en 1998 #ErnstJUnger #écrivainallemand #JDG1998-02-21
+#Thought Ernst was a city.
+
+
+Text = Jean Rouaud était écrivain en 1998 #JeanRouaud #écrivain #JDG1998-02-21
+Disambiguated Location [index 0 osmid (150960630L,) @ 0 : 0] = Jean : http://www.openstreetmap.org/node/150960630
+Disambiguated Location [index 1 osmid (31552217L,) @ 0 : 0] = Jean : http://www.openstreetmap.org/node/31552217
+#Very weird, although only cited once, Jean had two disambiguation when it was not a city...
+
+Text = Madeleine Santschi était écrivain suisse en 1998 #MadeleineSantschi #écrivainsuisse #JDG1998-02-26
+#Madeleine and Suisse localised, Suisse was localised as both a town in Belgium, as well as the country, could not disambiguate between the two.
+
+Text = La Suisse est un pays formidable
+#Same as above (without Madelein though)
+
+Text = La suisse est un pays formidable
+#Same as above (without Madelein though)
+
+Text = Pesaro (http://it.wikipedia.org/wiki/Pesaro) is present in book 'Piety and patronage in Renaissance Venice : Bellini, Titian and the Franciscans' by Goffen, Rona at page 3.
+Disambiguated Location [index 0 osmid (-117980L,) @ 11 : 11] = Venice : http://www.openstreetmap.org/relation/117980
+Disambiguated Location [index 2 osmid (253433264L,) @ 22 : 22] = Rona : http://www.openstreetmap.org/node/253433264
+#Venice was disambiguated into the Florida city (but comes from the fact Venice seems to be absent from the db)
+#Disambuguated Rona as a place in Scotland...

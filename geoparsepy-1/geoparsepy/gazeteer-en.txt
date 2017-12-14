@@ -1,0 +1,22 @@
+﻿# local gazeteer
+# - allows OSMID acronyms and multi-lingual names to be explicitly added
+#   along with any unofficial abbreviations for places that might be needed
+#
+# OSMID, OSMType, alt_name, alt_name ...
+# - OSMID = <integer>
+# - OSMType = relation, way, node
+# - alt_name = <string>
+#
+
+# UK
+
+62149, relation, UK, Britain, Great Britain
+
+# New York
+# note: NYSE has actually been changed recently so this is the old way number from OSM snapshot we are using
+
+52995647, way, NYSE, NY Stock Exchange
+52995645, way, NYSE, NY Stock Exchange
+129728579, way, Ground Zero, WTC
+150368085, way, NYU Langone Medical Center
+170953, relation, JC

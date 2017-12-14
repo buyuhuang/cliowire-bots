@@ -1,0 +1,27 @@
+﻿# corpus of good location names
+# to avoid wordnet matches removing them
+
+japan
+slough
+shanghai
+burundi
+baltic
+atlantic
+philippines
+basal
+sorbs
+tangier
+hollywood
+verdigris
+mesic
+charmes
+donges
+longes
+courtes
+marsing
+taninges
+froges
+braies
+arco
+ternate
+finland

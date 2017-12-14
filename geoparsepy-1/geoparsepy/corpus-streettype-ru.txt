@@ -1,0 +1,124 @@
+﻿# russian and ukrainian
+# street type prefix and suffix
+# these are identified in location names and used for token expansion to include location type variants
+# this gives us the maximum chance of matching a location name to the various ways to express it in text
+# e.g. 'london st' -> 'london street', 'london st'
+
+# see also http://wiki.openstreetmap.org/wiki/Name_finder:Abbreviations
+
+# TITLE = title word of placename (e.g. 'the')
+# TYPE = type of place (e.g. 'road')
+# +<phrase> = prefix
+# <phrase>+ = suffix
+# +<phrase>+ = can be both prefix and suffix
+# *<phrase> = dont use this token for a match but do include it in token expansion
+#   e.g. primary, *school --> matches only primary BUT will expand a match to <name> primary, <name> school
+#        this allows avoidance of overmatching to general names like school (which can be primary, secondary etc.)
+
+# note: save this as UTF-8 not a default latin encoded text file
+# note: types are processed in reverse phrase gram order (so large phrases are matched first)
+# note: first type match is used and variants expanded (other types ignored if they could also match)
+
+# add to stoplist location words that on thier own cannot be a specific location
+# e.g. 'north' cannot be used for 'north london'
+
+
+#
+# types (RU, UK)
+#
+
+# city
+TYPE, +город, +г, +г.
+TYPE, +місто
+
+# flat (e.g. flat 5)
+TYPE, +квартира, +кв, +кв.
+TYPE, +квартира, +кв, +кв.
+
+# construction (note: rarely used)
+TYPE, +строение, +стр, +стр.
+TYPE, +будову, +стор, +стор.
+
+# garden
+TYPE, +сад+
+TYPE, +сад+
+
+# park (garden)
+TYPE, +парк+
+TYPE, +парк+
+
+# roundabout / ringroad
+TYPE, +кольцевая+, +кольцо+
+TYPE, +кільцева+, +кільце+
+
+# square
+TYPE, +сквер+
+TYPE, +сквер+
+
+# area or province
+TYPE, +область+, +обл+, +обл.+
+TYPE, +область+, +обл+, +обл.+
+
+# region
+TYPE, +регион+
+TYPE, +регіон+
+
+# avenue (пр-т. is gramatically incorrect, but very often used by people when talking about avenues)
+TYPE, +проспект+, +пр+, +пр-т+, +пр.+, +пр-т.+
+TYPE, +проспект+, +пр+, +пр-т+, +пр.+, +пр-т.+
+
+# plaza
+TYPE, +площадь+, +пл+, +пл.+
+TYPE, +площа+, +пл+, +пл.+
+
+# street
+TYPE, +улица+, +ул+, +ул.+
+TYPE, +вулиця+, +вул+, +вул.+
+
+# side street or backstreet/bystreet (sometimes can be translated as alley)
+TYPE, +переулок+, +пер+, +пер.+
+TYPE, +провулок+, +пров+, +пров.+
+
+# highway, motorway
+TYPE, +шоссе+, +ш+, +ш.+
+TYPE, +шосе+, +ш+, +ш.+
+
+# note: hard to explain this one (similar to housing or two houses connected by build in construction path)
+TYPE, +корпус+, +корп+, +корп.+
+TYPE, +корпус +, +корп+, +корп.+
+
+# house
+TYPE, +дом+, +д+, +д.+
+TYPE, +будинок+
+
+# boulevard
+TYPE, +бульвар+, +б-р+, +б-р.+
+TYPE, +бульвар+, +б-р+, +б-р.+
+
+# square
+TYPE, +площадь+, +пл+, +пл.+
+TYPE, +площа+, +пл+, +пл.+
+
+# embankment or quay
+TYPE, +набережная+, +наб+, +наб.+
+TYPE, +набережна+, +наб+, +наб.+
+
+# driveway
+TYPE, +проезд+, +пр-д+, +пр-д.+
+TYPE, +проїзд+, +пр-д+, +пр-д.+
+
+# alley
+TYPE, +аллея+
+TYPE, +алея+
+
+# township 
+TYPE, +поселок+, +пос+, +пос.+
+TYPE, +селище+
+
+# region or destrict
+TYPE, +район+, +р-он+, +р-он.+
+TYPE, +район+
+
+# glade (note: rarely used, especially in the city)
+TYPE, +просека+
+TYPE, +просіка+

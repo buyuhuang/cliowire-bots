@@ -1,0 +1,9 @@
+﻿# german 'de'
+# corpus of stoplist words applied to location entities prior to matching to avoid poor OSM names that are not informative enough to be useful
+# location phrases from OSM that only contain tokens in the stoplist are deleted (so cannot cause a match)
+# note: save as UTF8 encoded file
+# notw: WORDNet is checked for any non-noun word so words here should only need to be nouns
+
+
+hoffen
+servas

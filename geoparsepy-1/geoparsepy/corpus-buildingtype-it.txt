@@ -1,0 +1,193 @@
+﻿# italian
+# place type prefix and suffix
+# these are identified in location names and used for token expansion to include location type variants
+# this gives us the maximum chance of matching a location name to the various ways to express it in text
+# e.g. 'london st' -> 'london street', 'london st'
+
+# TITLE = title word of placename (e.g. 'the')
+# TYPE = type of place (e.g. 'road')
+# +<phrase> = prefix
+# <phrase>+ = suffix
+# +<phrase>+ = can be both prefix and suffix
+# *<phrase> = dont use this token for a match but do include it in token expansion
+#   e.g. primary, *school --> matches only primary BUT will expand a match to <name> primary, <name> school
+#        this allows avoidance of overmatching to general names like school (which can be primary, secondary etc.)
+
+# note: save this as UTF-8 not a default latin encoded text file
+# note: types are processed in reverse phrase gram order (so large phrases are matched first)
+
+# add to stoplist location words that on thier own cannot be a specific location
+# e.g. 'north' cannot be used for 'north london'
+
+# take away or restaurant variants
+TYPE, +take away, +tavola calda, +ristorante, +rosticceria, +paninoteca, +pizzeria, +pizzeria da asporto, +gastronomia, +locanda, +agriturismo
+
+# bar
+TYPE, +bar+, +pub+, +wine bar+, +enoteca,
+
+# fruit and veg
+TYPE, +fruttivendolo
+
+# cyber cafe
+TYPE, +caffe'+, +internet caffe'+
+
+# cafe
+TYPE, +caffe'+
+
+# bakery
+TYPE, +panetteria, +biscottificio
+
+# supermarket or shopping centre
+TYPE, +centro commerciale, +ipermarket, +hyperMarket, +supermarket, +mercato, +mercato comunale, +mercato di natale, +mercato rionale, +mercato settimanale
+
+# rooms
+TYPE, +stanze, +affittacamere
+
+# car wash
+TYPE, +autolavaggio
+
+# gallery
+TYPE, +galleria, +galleria d'arte
+
+# car park
+TYPE, +parcheggio, +parcheggio auto, +parcheggio autovetture
+
+# caravan park
+TYPE, +campeggio, +pargheggio camper, +parcheggio roulotte, +parcheggio caravan
+
+# insurance brokers
+TYPE, +agenzia immobiliare, +agenzie immobiliari, +immobiliare, +immobiliari
+
+# systems (company)
+TYPE, +sistemi
+
+# station
+TYPE, +stazione
+
+# railway station
+TYPE, *+stazione, +stazione dei treni
+
+# bus station
+TYPE, *+stazione, +autostazione, +stazione degli autobus, +fermata dell'autobus, *+fermata
+
+# subway station
+TYPE, *+stazione, +metropolitana, +fermata della metropolitana, *+fermata, +metro, +fermata della metro,
+
+# terminal
+TYPE, +terminal
+
+# ferry terminal
+TYPE, +traghetto, +imbarco, +imbarchi, +porto
+
+# tunnel
+TYPE, +tunnel
+
+# airport
+TYPE, +aeroporto
+
+# international airport, {x}airport
+TYPE, *+aeroporto, +aeroporto internazionale
+
+# domestic airport
+TYPE, *+aeroporto, +aeroporto nazionale
+
+# heliport
+TYPE, +eliporto
+
+# preschool
+
+# school types
+TYPE, +scuole
+TYPE, *+scuole, +asilo, +asilo nido, +scuola materna, +nido
+TYPE, *+scuole, +elementare, +elementari, +scuola elementare, +scuole elementari
+TYPE, *+scuole, +media, +medie, +scuola media, +scuole medie
+TYPE, *+scuole, +convitto, +collegio
+TYPE, *+scuole, +superiore, +superiori, +scuola superiore, +scuole superiori, +scuola magistrale, +magistrale, +ginnasio, +liceo, +istituto tecnico
+TYPE, *+scuole, +scuola privata
+
+# university
+TYPE, +universita', +uni, +politecnico
+
+# library
+TYPE, +biblioteca, +biblioteca pubblica
+
+# hospital
+TYPE, +ospedale, +ospedali, +guardia medica, +pronto soccorso, +presidio medico, +presidio di pronto soccorso  
+
+# day centre
+TYPE, +centro diurno, +day hospistal
+
+# clinic
+TYPE, +clinica, +ospizio, +casa di riposo, +centro residenziale
+
+# church, chapel
+TYPE, +chiesa, +cappella
+
+# cathedral
+TYPE, +cattedrale
+
+# bank
+TYPE, +banca, bank+
+
+# court
+TYPE, +tribunale di, +corte di, +corte d'appello di
+
+# solicitors
+TYPE, +notai, +avvocati
+
+# police
+TYPE, +polizia, +stazione di polizia, +dipartimento di polizia, +vigili urbani
+
+# fire station
+TYPE, +vigili del fuoco, +caserma dei vigili, +caserma vigili del fuoco
+
+# house
+TYPE, +casa, +edificio, +palazzo, +appartamento
+
+# store
+TYPE, +negozio
+
+# gallery
+TYPE, +galleria
+
+# park
+TYPE, +parco, +lido
+
+# market
+TYPE, +mercato
+
+# garage
+TYPE, +garage, +autorimessa
+
+# barracks
+TYPE, +caserma
+
+# stadium
+TYPE, +stadio
+
+# hotel
+TYPE, +hotel, +albergo, +ostello
+
+# motel
+TYPE, +motel
+
+# bed and breakfast
+TYPE, +bed and breakfast+, +bed & breakfast+, +b&b+, +locanda+
+
+# tavern
+TYPE, +taverna, +agriturismo
+
+# theatre
+TYPE, +teatro
+
+# cinema
+TYPE, +cinema, +multisala, +multiplex
+
+# studio
+TYPE, +studio
+
+# centre
+TYPE, +centro
+
+# building
+TYPE, +edificio 
