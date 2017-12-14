@@ -53,11 +53,12 @@ Small class that is a downsampled object representation of pulses retrived on
 ClioWire. Made for the sake of mudalirity, clarity, and for future additions.
 '''
 class Pulse:
-    def __init__(self, id, content, reply_to_id=None, hashtags=None):
+    def __init__(self, id, content, reply_to_id=None, hashtags=None, user=None):
         self.id=id
         self.reply_to_id=reply_to_id
         self.content=content
         self.hashtags=[]
+        self.userid = user
         if hashtags != None:
             for h in hashtags:
                 self.hashtags.append(h['name'])
@@ -112,5 +113,7 @@ class PulseIterator():
     def retrieve_pulses(self, recent_id):
         if self.hashtag == None:
             return self.api_instance.timeline_local(max_id=recent_id, since_id=self.oldest_id, limit=self.batch_size)
-        else:
+        elif self.userid == None:
             return self.api_instance.timeline_hashtag(self.hashtag, max_id=recent_id, since_id=self.oldest_id, limit=self.batch_size, local=True)
+        else:
+            return self.api_instance.account_statuses(self.userid, max_id=recent_id, since_id=self.oldest_id, limit=self.batch_size)

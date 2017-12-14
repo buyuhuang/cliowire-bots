@@ -1,6 +1,8 @@
 import os, sys
 import overpy
+import json
 from clioServer import credentials, postPulses, cliowireUtils as cU
+import subprocess
 
 #This class is meant to hold information that relate to the account that will get his pulses geoparsed
 class AccountGeoInfos:
@@ -14,38 +16,55 @@ class AccountGeoInfos:
 class GeoPulse:
     def __init__(self, pulse):
         self.pulse = pulse
-        self.geoEntity = None
+        self.geoEntities = []
         self.coords = []
+        self.osmids = []
 
     def setEntity(self, ent):
-        self.geoEntity = ent
+        self.geoEntities.append(ent)
 
-    def setCoords(lat, lng):
-        #the coords need to be reversed, because Leaflet.js.
-        self.coords.append(lng)
-        self.coords.append(lat)
+    def setEntities(self, entities):
+        self.geoEntities = entities
+
+    def setOSMID(self, osmid):
+        self.omsid.append(osmid)
+
+    def setOSMIDs(self, osmids):
+        self.omsids = osmids
 
     #returns a new
-    def duplicate():
-        return GeoPulse(self.pulse)
+    def toJson(self):
+        return {
+            'id':self.id,
+            'content': self.pulse.content,
+            'entities': self.geoEntities
+            'coords': self.coords
+            'osmids': self.osmids
+        }
 
 
-news_source = AccountGeoInfos(12,'Le_temps_scrapbot',[0.0000,0.0000], 'fr')
-sec_sources = AccountGeoInfos(13,'secondary_sources_bot', [0.0000,0.0000], 'en')
+news_source = AccountGeoInfos(12,'le_temps_scrapbot',[6.143158, 46.204391], 'fr')
+sec_sources = AccountGeoInfos(13,'secondary_sources_bot', [12.4923,41.8903], 'en')
 
 sources = [news_source, sec_sources]
 
+INTER_JSON_FILE = "pulsesRead.json"
 
-def getCoords(type, osmid, api):
+
+def getCoords(osmid, api):
+    osmtype = 'Node'
+    if osmid < 0:
+        omstype = 'Rel'
+        osmid = -osmid
 
     query = "{}({});(._;>;);out{};"
-    if type=='Rel':
+    if osmtype=='Rel':
         query.format('relation', osmid, ' center')
     else:
         query.format('node', osmid)
 
     res = api.query(query)
-    if type == 'Rel':
+    if osmtype == 'Rel':
         rel = res.relations[0]
         return [rel.center_lon, rel.center_lat]
     else:
@@ -64,18 +83,46 @@ def main(args):
 
     #this should not produce an index out of bound error, since it is checked in the try catch above.
     file_name = args[1]
+
+    #now need to retrieve the source name from the file of metadata chosen.
+    source_name = file_name.replace('_infos', '')
+    isSrc = lambda x: x.account_name == source_name
+    correct_account = None
+    for s in sources:
+        if isSrc(s):
+            correct_account = s
+
+    if correct_account == None:
+        raise Exception('wrong file of metadata chosen, please select or create a metadata file corresponding to the correct source.')
+        sys.exit(1)
+
+
     credentials.checkIfCredentials(file_name)
 
     cliowireConn = credentials.log_in(file_name, bot_login, bot_pswd)
 
     CWIter = cU.PulseIterator(cliowireConn, oldest_id=last_id)
-    GeoPulses = []
-
+    data = {}
+    data['pulses'] = []
     for batch in CWIter:
         for toot in batch:
-            #if toot
             pulse = cU.Pulse.tootToPulse(toot)
             if not pulse.hashtags.contains('geocoding'):
-                toGeoParse.append(pulse)
+                data.append(GeoPulse(pulse).toJson())
 
-getCoords()
+    with open(INTER_JSON_FILE, 'w') as outfile:
+        json.dump(data, outfile)
+
+    subprocess.call("./geoparsepy-1/geoparsing {} {} {} {}".format(INTER_JSON_FILE, s.lang, s.focus_point[0], s.focus_point[1]))
+
+    with open(INTER_JSON_FILE, 'w') as json_file:
+        data = json.load(json_file)
+        for p in data['pulses']:
+            for index in range(len(p['entities'])):
+                coords = getCoords(p['coords'][index])
+                newContent = p['content'] + ' #'+p['entities']+ ' '+coordsToHashtag(coords)
+                cliowireConn.status_post(newContent, in_reply_to_id=p['id'])
+
+
+
+main(sys.argv)
