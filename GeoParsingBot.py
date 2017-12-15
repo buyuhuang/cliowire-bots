@@ -3,6 +3,7 @@ import overpy
 import json
 from clioServer import credentials, postPulses, cliowireUtils as cU
 import subprocess
+from math import modf
 
 #This class is meant to hold information that relate to the account that will get his pulses geoparsed
 class AccountGeoInfos:
@@ -20,56 +21,64 @@ class GeoPulse:
         self.coords = []
         self.osmids = []
 
-    def setEntity(self, ent):
-        self.geoEntities.append(ent)
-
-    def setEntities(self, entities):
-        self.geoEntities = entities
-
-    def setOSMID(self, osmid):
-        self.omsid.append(osmid)
-
-    def setOSMIDs(self, osmids):
-        self.omsids = osmids
-
     #returns a new
     def toJson(self):
         return {
-            'id':self.id,
-            'content': self.pulse.content,
-            'entities': self.geoEntities
-            'coords': self.coords
+            'id':self.pulse.id,
+            'content': cU.cleanHTTP(self.pulse.content),
+            'entities': self.geoEntities,
             'osmids': self.osmids
         }
 
 
 news_source = AccountGeoInfos(12,'le_temps_scrapbot',[6.143158, 46.204391], 'fr')
 sec_sources = AccountGeoInfos(13,'secondary_sources_bot', [12.4923,41.8903], 'en')
+albane_source = AccountGeoInfos(8, 'albane', [6.143158, 46.204391], 'en')
 
-sources = [news_source, sec_sources]
+sources = [news_source, sec_sources, albane_source]
 
-INTER_JSON_FILE = "pulsesRead.json"
+INTER_JSON_FILE_IN = "pulsesReadIn.json"
+INTER_JSON_FILE_OUT = "pulsesReadOut.json"
 
 
-def getCoords(osmid, api):
+def getCoords( api, osmid):
     osmtype = 'Node'
     if osmid < 0:
         omstype = 'Rel'
         osmid = -osmid
 
-    query = "{}({});(._;>;);out{};"
+    opQuery = "{}({});(._;>;);out{};"
     if osmtype=='Rel':
-        query.format('relation', osmid, ' center')
+        opQuery = opQuery.format('relation', osmid, ' center')
     else:
-        query.format('node', osmid)
+        opQuery = opQuery.format('node', osmid, '')
 
-    res = api.query(query)
+    res = api.query(opQuery)
     if osmtype == 'Rel':
         rel = res.relations[0]
         return [rel.center_lon, rel.center_lat]
     else:
         node = res.nodes[0]
         return [node.lon, node.lat]
+
+
+def coordsToHashtag(coords):
+    prelude = "#p"
+    for index in range(len(coords)):
+        minus = ''
+        c = coords[index]
+        if c < 0:
+            c = -c
+            minus = 'M'
+        sep = modf(c)
+        first = int(sep[1])
+        sec = int(round(modf(sep[0] * 10000)[1]))
+        toAdd = minus+str(first)+'_'+str(sec)
+        prelude += toAdd
+        if index == 0:
+            prelude += '_'
+    return prelude
+
 
 def main(args):
     #think to not parse geocoords
@@ -101,28 +110,31 @@ def main(args):
 
     cliowireConn = credentials.log_in(file_name, bot_login, bot_pswd)
 
-    CWIter = cU.PulseIterator(cliowireConn, oldest_id=last_id)
+    CWIter = cU.PulseIterator(cliowireConn, oldest_id=last_id, user=correct_account.id)
     data = {}
     data['pulses'] = []
     for batch in CWIter:
-        for toot in batch:
-            pulse = cU.Pulse.tootToPulse(toot)
-            if not pulse.hashtags.contains('geocoding'):
-                data.append(GeoPulse(pulse).toJson())
+        for pulse in batch:
+            if not 'geocoding' in pulse.hashtags:
+                data['pulses'].append(GeoPulse(pulse).toJson())
 
-    with open(INTER_JSON_FILE, 'w') as outfile:
+    with open(INTER_JSON_FILE_IN, 'w') as outfile:
         json.dump(data, outfile)
 
-    subprocess.call("./geoparsepy-1/geoparsing {} {} {} {}".format(INTER_JSON_FILE, s.lang, s.focus_point[0], s.focus_point[1]))
+    subprocess.call(["./geoparsepy-1/geoparsing.py", INTER_JSON_FILE_IN, INTER_JSON_FILE_OUT, s.lang, str(s.focus_point[0]), str(s.focus_point[1])])
 
-    with open(INTER_JSON_FILE, 'w') as json_file:
+    overApi = overpy.Overpass()
+    with open(INTER_JSON_FILE_OUT, 'r') as json_file:
         data = json.load(json_file)
         for p in data['pulses']:
             for index in range(len(p['entities'])):
-                coords = getCoords(p['coords'][index])
-                newContent = p['content'] + ' #'+p['entities']+ ' '+coordsToHashtag(coords)
+                coords = getCoords(overApi, p['osmids'][index])
+                newContent = p['content'] + ' #geocoding #'+p['entities'][index]+ ' ' +coordsToHashtag(coords)
                 cliowireConn.status_post(newContent, in_reply_to_id=p['id'])
 
-
+    #need to update the id of the most recent pulse to allow statefull future computations
+    last_id = CWIter.latest_id
+    #we need to save the last id that we have
+    cU.updateBotsMetadata(file_name, last_id)
 
 main(sys.argv)
