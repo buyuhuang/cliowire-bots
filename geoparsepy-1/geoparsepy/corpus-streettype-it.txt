@@ -1,0 +1,68 @@
+﻿# italian
+# street type prefix and suffix
+# these are identified in location names and used for token expansion to include location type variants
+# this gives us the maximum chance of matching a location name to the various ways to express it in text
+# e.g. 'london st' -> 'london street', 'london st'
+
+# see also http://wiki.openstreetmap.org/wiki/Name_finder:Abbreviations
+
+# TITLE = title word of placename (e.g. 'the')
+# TYPE = type of place (e.g. 'road')
+# +<phrase> = prefix
+# <phrase>+ = suffix
+# +<phrase>+ = can be both prefix and suffix
+# *<phrase> = dont use this token for a match but do include it in token expansion
+#   e.g. primary, *school --> matches only primary BUT will expand a match to <name> primary, <name> school
+#        this allows avoidance of overmatching to general names like school (which can be primary, secondary etc.)
+
+# note: save this as UTF-8 not a default latin encoded text file
+# note: types are processed in reverse phrase gram order (so large phrases are matched first)
+# note: first type match is used and variants expanded (other types ignored if they could also match)
+
+# add to stoplist location words that on thier own cannot be a specific location
+# e.g. 'north' cannot be used for 'north london'
+
+#
+# titles
+#
+
+# north east
+TITLE, +nord-est+, +nord est+
+# north west
+TITLE, +nord-ovest+, +nord ovest+
+# south east
+TITLE, +sud-est+, +sud est+
+# south west
+TITLE, +sud-ovest+, +sud ovest+
+# north
+TITLE, +nord+
+# south
+TITLE, +sud+
+# east
+TITLE, +est+
+# west
+TITLE, +ovest+
+# upper
+TITLE, +alto+, +alta+, +alti+, +alte+
+# lower
+TITLE, +basso+, +bassa+, +bassi+, +basse+
+
+#
+# types
+#
+
+TYPE, +via, +v, +via della, +v della, +via dell', +v dell', +via del, +v del, +via di, +v di
+TYPE, +viale, +vle, +viale della, +vle della, +viale dell', +vle dell', +viale del, +vle del, +viale di, +vle di
+TYPE, +strada, +str, +sda, +strada della, +str della, +sda della, +strada dell', +str dell', +sda dell', +strada del, +str del, +sda del, +strada di, +str di, +sda di
+TYPE, +vicolo, +vlo, +vicolo della, +vlo della, +vicolo dell', +vlo dell', +vicolo del, +vlo del, +vicolo di, +vlo di
+TYPE, +piazza, +pzza, +p, +piazza della, +pzza della, +p della, +piazza dell', +pzza dell', +p dell', +piazza del, +pzza del, +p del, +piazza di, +pzza di, +p di
+TYPE, +piazzale, +ple, +pzzale, +piazzale della, +ple della, +pzzale della, +piazzale dell', +ple dell', +pzzale dell', +piazzale del, +ple del, +pzzale del,  +piazzale di, +ple di, +pzzale di
+TYPE, +piazzetta, +ptta, +piazzetta della, +ptta della, +piazzetta dell', +ptta dell', +piazzetta del, +ptta del, +piazzetta di, +ptta di
+TYPE, +corso, +cso, +corso della, +cso della, +corso dell', +cso dell', +corso del, +cso del, +corso di, +cso di
+TYPE, +contrada, +cda, +contrada della, +cda della, +contrada dell', +cda dell', +contrada del, +cda del, +contrada di, +cda di
+TYPE, +largo, +lgo, +largo della, +lgo della, +largo dell', +lgo dell', +largo del, +lgo del, +largo di, +lgo di
+TYPE, +circonvallazione, +circonv, +c, +circonvallazione della, +circonv della, +c della, +circonvallazione dell', +circonv dell', +c dell', +circonvallazione del, +circonv del, +c del, +circonvallazione di, +circonv di, +c di
+TYPE, +raccordo, +rdo, +raccordo della, +rdo della, +raccordo dell', +rdo dell', +raccordo del, +rdo del, +raccordo di, +rdo di
+TYPE, +unità, +unità della, +unità dell', +unità del, +unità di
+TYPE, +zona, +zone, +zona della, +zone della, +zona dell', +zone dell', +zona del, +zone del, +zona di, +zone di
+

@@ -1,0 +1,61 @@
+﻿# portuguese
+# street type prefix and suffix
+# these are identified in location names and used for token expansion to include location type variants
+# this gives us the maximum chance of matching a location name to the various ways to express it in text
+# e.g. 'london st' -> 'london street', 'london st'
+
+# see also http://wiki.openstreetmap.org/wiki/Name_finder:Abbreviations
+
+# TITLE = title word of placename (e.g. 'the')
+# TYPE = type of place (e.g. 'road')
+# +<phrase> = prefix
+# <phrase>+ = suffix
+# +<phrase>+ = can be both prefix and suffix
+# *<phrase> = dont use this token for a match but do include it in token expansion
+#   e.g. primary, *school --> matches only primary BUT will expand a match to <name> primary, <name> school
+#        this allows avoidance of overmatching to general names like school (which can be primary, secondary etc.)
+
+# note: save this as UTF-8 not a default latin encoded text file
+# note: types are processed in reverse phrase gram order (so large phrases are matched first)
+# note: first type match is used and variants expanded (other types ignored if they could also match)
+
+# add to stoplist location words that on thier own cannot be a specific location
+# e.g. 'north' cannot be used for 'north london'
+
+#
+# titles
+#
+
+# north east
+TITLE, +nordeste+, +do nordeste
+# north west
+TITLE, +noroeste+, +do noroeste
+# south east
+TITLE, +sudeste+, +do sudeste
+# south west
+TITLE, +sudoeste+, +do sudoeste
+# north
+TITLE, +norte+
+# south
+TITLE, +sul+
+# east
+TITLE, +leste+
+# west
+TITLE, +oeste+
+
+#
+# types
+#
+
+TYPE, +rua, +r, +calle, +rua de, +r de, +calle de, +rua da, +r da, +calle da, +rua do, +r do, +calle do, +rua dos, +r dos, +calle dos
+TYPE, +avenida, +av, +avenida de, +av de, +avenida da, +av da, +avenida do, +av do, +avenida dos, +av dos
+TYPE, +estrada, +via, +e, +rotunda estrada, +variante, +estrada de, +via de, +e de, +rotunda estrada de, +variante de, +estrada da, +via da, +e da, +rotunda estrada da, +variante da, +estrada do, +via do, +e do, +rotunda estrada do, +variante do, +estrada dos, +via dos, +e dos, +rotunda estrada dos, +variante dos
+TYPE, +pista, +pista de, +pista da, +pista do, +pista dos
+TYPE, +lugar, +sítio, +local, +localidade, +lugar de, +sítio de, +local de, +localidade de, +lugar da, +sítio da, +local da, +localidade da, +lugar do, +sítio do, +local do, +localidade do, +lugar dos, +sítio dos, +local dos, +localidade dos
+TYPE, +estacionamento, +estacionamento de, +estacionamento da, +estacionamento do, +estacionamento dos
+TYPE, +auto, +auto-estrada, +via rápida, +auto de, +auto-estrada de, +via rápida de, +auto da, +auto-estrada da, +via rápida da, +auto do, +auto-estrada do, +via rápida do, +auto dos, +auto-estrada dos, +via rápida dos
+TYPE, +praça, +largo, +praça de, +largo de, +praça da, +largo da, +praça do, +largo do, +praça dos, +largo dos
+TYPE, +paço, +campo, +patio, +paço de, +campo de, +patio de, +paço da, +campo da, +patio da, +paço do, +campo do, +patio do, +paço dos, +campo dos, +patio dos
+TYPE, +unidade, +unidade de, +unidade da, +unidade do, +unidade dos
+TYPE, +travessa, +travessa de, +travessa da, +travessa do, +travessa dos
+

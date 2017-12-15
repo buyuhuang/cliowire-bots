@@ -1,0 +1,50 @@
+﻿# italian 'it'
+# corpus of stoplist words applied to location entities prior to matching to avoid poor OSM names that are not informative enough to be useful
+# location phrases from OSM that only contain tokens in the stoplist are deleted (so cannot cause a match)
+# note: save as UTF8 encoded file
+# notw: WORDNet is checked for any non-noun word so words here should only need to be nouns
+
+
+
+allora
+bella
+bene
+bimbi
+campo
+casa
+caso
+cavi
+cena
+centrale
+corrente
+cosa
+dura
+edison
+fa
+fondo
+grande
+grazie
+il
+luce
+manca
+mare
+mesi
+ora
+parla
+piazza
+prezzo
+quel
+rame
+resto
+teatro
+tempo
+terzi
+thor
+tornata
+terzo
+nove
+euri
+torno
+sammartini
+meno
+circa

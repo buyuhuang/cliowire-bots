@@ -1,0 +1,64 @@
+﻿# russian and ukrainian
+# admin region prefix and suffix (e.g. north)
+# these are identified in location names and used for token expansion to include location type variants
+# this gives us the maximum chance of matching a location name to the various ways to express it in text
+# e.g. 'london north' -> 'london north', 'north london'
+
+# TITLE = title word of placename (e.g. 'the')
+# TYPE = type of place (e.g. 'road')
+# +<phrase> = prefix
+# <phrase>+ = suffix
+# +<phrase>+ = can be both prefix and suffix
+# *<phrase> = dont use this token for a match but do include it in token expansion
+#   e.g. primary, *school --> matches only primary BUT will expand a match to <name> primary, <name> school
+#        this allows avoidance of overmatching to general names like school (which can be primary, secondary etc.)
+
+# note: save this as UTF-8 not a default latin encoded text file
+# note: types are processed in reverse phrase gram order (so large phrases are matched first)
+
+# add to stoplist location words that on thier own cannot be a specific location
+# e.g. 'north' cannot be used for 'north london'
+
+# north east (RU, UK)
+TITLE, +северо восток+, +северо-восток+, северо восточный+, северо-восточный+
+TITLE, +північно схід+, +північно-схід+, північно східний+, північно-східний+
+
+# north west (RU, UK)
+TITLE, +северо запад+, +северо-запад+, северо западный+, северо-западный+
+TITLE, +північно захід+, +північно-захід+, північно західний+, північно-західний+
+
+# south east (RU, UK)
+TITLE, +юго восток+, +юго-восток+, юго восточный+, юго-восточный+
+TITLE, +південно схід+, +південно-схід+, південно східний+, південно-східний+
+
+# south west (RU, UK)
+TITLE, +юго запад+, +юго-запад+, юго западный+, юго-западный+
+TITLE, +південно захід+, +південно-захід+, південно західний+, південно-західний+
+
+# north (RU, UK)
+TITLE, +север+, северо+, северный+
+TITLE, +північ+, північо+, північний+
+
+# south (RU, UK)
+TITLE, +юг+, юго+, южный+
+TITLE, +південь+, південно+, південний+
+
+# east (RU, UK)
+TITLE, +восток+, восточный+
+TITLE, +схід+, східний+
+
+# west (RU, UK)
+TITLE, +запад+, западный+
+TITLE, +захід+, західний+
+
+# greater (RU, UK)
+TITLE, большой+
+TITLE, великий+
+
+# upper (RU, UK)
+TITLE, +верхний+
+TITLE, +верхній+
+
+# lower (RU, UK)
+TITLE, +нижний+
+TITLE, +нижній+

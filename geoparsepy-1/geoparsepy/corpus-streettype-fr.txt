@@ -1,0 +1,84 @@
+﻿# french
+# street type prefix and suffix
+# these are identified in location names and used for token expansion to include location type variants
+# this gives us the maximum chance of matching a location name to the various ways to express it in text
+# e.g. 'london st' -> 'london street', 'london st'
+
+# see also http://wiki.openstreetmap.org/wiki/Name_finder:Abbreviations
+
+# TITLE = title word of placename (e.g. 'the')
+# TYPE = type of place (e.g. 'road')
+# +<phrase> = prefix
+# <phrase>+ = suffix
+# +<phrase>+ = can be both prefix and suffix
+# *<phrase> = dont use this token for a match but do include it in token expansion
+#   e.g. primary, *school --> matches only primary BUT will expand a match to <name> primary, <name> school
+#        this allows avoidance of overmatching to general names like school (which can be primary, secondary etc.)
+
+# note: save this as UTF-8 not a default latin encoded text file
+# note: types are processed in reverse phrase gram order (so large phrases are matched first)
+# note: first type match is used and variants expanded (other types ignored if they could also match)
+
+# add to stoplist location words that on thier own cannot be a specific location
+# e.g. 'north' cannot be used for 'north london'
+
+#
+# titles
+#
+
+# north east
+TITLE, +nord-est+, +nord est+
+# north west
+TITLE, +nord-ouest+, +nord ouest+
+# south east
+TITLE, +sud-est+, +sud est+
+# south west
+TITLE, +sud-ouest+, +sud ouest+
+# north
+TITLE, +nord+
+# south
+TITLE, +sud+
+# south
+TITLE, +midi+
+# east
+TITLE, +est+
+# west
+TITLE, +ouest+
+# greater
+TITLE, +grand+
+
+# smaller
+TITLE, +petit+
+# upper
+TITLE, +haut+
+# lower
+TITLE, +inférieur+
+# lower
+TITLE, +bas+
+# central
+TITLE, +central+
+
+#
+# types
+#
+TYPE, +avenue, +ave, +av, +avenue de, +ave de, +av de, +avenue d', +ave d', +av d', +avenue du, +ave du, +av du, +avenue des, +ave des, +av des
+TYPE, +rue, +rue de, +rue du, +rue des, +rue d', +rue de la
+TYPE, +route, +route de, +route du, +route des, +route d', +route de la
+TYPE, +voie, +voie de, +voie du, +voie des, +voie d', +voie de la
+TYPE, +boulevard, +blvd, +boulevard de, +blvd de, +boulevard du, +blvd du, +boulevard des, +blvd des, +boulevard d', +blvd d'
+TYPE, +autoroute, +auto, +autoroute de, +auto de, +autoroute du, +auto du, +autoroute des, +auto des, +autoroute d', +auto d'
+TYPE, +carré, +carré de, +carré du, +carré des, +carré d', +carré de la
+TYPE, +chaussée, +chaussée d', +chaussée de, +chaussée du, +chaussée des, +chaussée de la
+TYPE, +cour, +cour de, +cour du, +cour des, +cour de la
+TYPE, +île, +île de, +île du, +île des, +île de la
+TYPE, +îles, +îles de, +îles du, +îles des, +îles de la
+TYPE, +place, +place de, +place du, +place des, +place de la
+TYPE, +promenade, +promenade de, +promenade du, +promenade des, +promenade de la
+TYPE, +terrasse, +terrasse de, +terrasse du, +terrasse des, +terrasse de la
+TYPE, +pont, +pont de, +pont du, +pont des, +pont de la
+TYPE, +allée
+TYPE, +passage
+TYPE, +cité
+TYPE, +faubourg, +faubourg de, +faubourg d', +faubourg de la, +faubourg du, +faubourg des
+TYPE, +banlieue, +banlieue de, +banlieue d', +banlieue de la, +banlieue du, +banlieue des
+

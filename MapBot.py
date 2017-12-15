@@ -1,22 +1,12 @@
-from clioServer import credentials, postPulses
+from clioServer import credentials, postPulses, cliowireUtils as cU
 from mastodon import Mastodon
-from cliowireUtils import Pulse, PulseIterator
-import sys
-import os
-import json
-import copy
-import io
-import re
-
+import sys, os, json, copy, io, re
 
 #constants of the program
 APP_NAME = 'MapBot'
-BOT_LOGIN = 'cedric.viaccoz@gmail.com'
-BOT_PSWD = 'fdh123456'
 DATA_FOLDER = 'data/'
 HASH_MARKER = 'geocoding'
 FINAL_PULSE = 'Today, {0} pulse(s) were geocoded and then added to the map of GeoPulses !'
-METADATA_FILE = DATA_FOLDER + APP_NAME + '_metadata.info'
 
 GEOJSON_FILEPATH = DATA_FOLDER+'geopulses.json'
 
@@ -24,25 +14,31 @@ GEOJSON_PRE = "{\"type\": \"FeatureCollection\",\"generator\": \"overpass-turbo\
 
 GEOJSON_POST = "]}"
 
+#regex that is able to detect if a certain token is a correct coordinate hashtag or not.
+coordReg = re.compile(r"\#pM?[0-9]{1,2}_[0-9]{1,4}_M?[0-9]{1,2}_[0-9]{1,4}")
+
+class NoCoordsException(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
 def main(args):
 
-    #need to create the data directory
-    if not os.path.exists(DATA_FOLDER):
-        os.makedirs(DATA_FOLDER)
+    bot_login, bot_pswd, last_id, file_name = None, None, None, None #BATMAAAAAAAN
+    try:
+        bot_login, bot_pswd, last_id = cU.retrieveBotsMetadata(args[1:])
+    except Exception as exc:
+        #print the error message for the user to understand what atrocity he did
+        print('\n'+str(exc)+'\n')
+        sys.exit(1)
+    #this should not produce an index out of bound error, since it is checked in the try catch above.
+    file_name = args[1]
+    credentials.checkIfCredentials(file_name)
 
-    credentials.checkIfCredentials(APP_NAME)
+    cliowireConn = credentials.log_in(file_name, bot_login, bot_pswd)
 
-    cliowireConn = credentials.log_in(APP_NAME, BOT_LOGIN, BOT_PSWD)
-
-    last_id=0
-
-    #we retrieve the id of the last treated geopulse, to avoid rereading every geopulse
-    if os.path.isfile(METADATA_FILE):
-        f = open(METADATA_FILE, 'r')
-        last_id = int(f.readline())
-        f.close()
-
-    CWIter = PulseIterator(cliowireConn, hashtag=HASH_MARKER, oldest_id=last_id)
+    CWIter = cU.PulseIterator(cliowireConn, hashtag=HASH_MARKER, oldest_id=last_id)
 
     toWrite = ''
 
@@ -51,10 +47,16 @@ def main(args):
 
     for geopulses in CWIter:
         for p in geopulses:
-            cleanContent = cleanHTTP(p.content)
-            toWrite += jsonParse(cleanContent, int(p.id))
-            toWrite += ','
-            nmbOfPulses += 1
+            cleanContent = cU.cleanHTTP(p.content)
+            try:
+                toWrite += jsonParse(cleanContent, int(p.id))
+                toWrite += ','
+                nmbOfPulses += 1
+            except NoCoordsException:
+                pass
+
+    #need to update the id of the most recent pulse to allow statefull future computations
+    last_id = CWIter.latest_id
 
     if nmbOfPulses == 0:
         print("No new geopulses were detected on the platform.\nNo actions were performed on the map.")
@@ -64,21 +66,15 @@ def main(args):
         f = writeGeoPulses(GEOJSON_FILEPATH, toWrite)
         f.close()
         #we need to save the last id that we have
-        fmeta = open(METADATA_FILE, 'w')
-        fmeta.write(str(CWIter.latest_id))
-        fmeta.close()
+        cU.updateBotsMetadata(file_name, last_id)
         postPulses.post_content(cliowireConn, [FINAL_PULSE.format(nmbOfPulses)])
 
-def cleanHTTP(content):
-    #Remove href balises, but keep the url
-    cleanHref = re.compile('<a[^>]+href=\"(.*?)\"[^>]*>')
-    #Remove every other http balises
-    cleanr = re.compile('<.*?>')
-    cleantext = re.sub(cleanHref, '', content)
-    cleantext = re.sub(cleanr, '', cleantext)
-    return cleantext
 
 def writeGeoPulses(filepath, pulsesToWrite):
+    #first need to create the data folder if it is not already present.
+    if not os.path.exists(DATA_FOLDER):
+        os.makedirs(DATA_FOLDER)
+
     if os.path.isfile(filepath):
         #this way of doing might not be feasible once the file gets too big.
         #really need a way to erase two last char of a JSON file.
@@ -108,8 +104,11 @@ def contentBreakDown(content):
     filteredContent = []
     entities = []
     coordinates = []
+    #to avoid pulses with the hashtag #geocoding without being a geopulse.
+    hasCoords = False
     for t in tokens:
-        if t.startswith('#p'):
+        if re.match(coordReg, t) != None:
+            hasCoords = True
             removeP = t[2:]
             undSS = removeP.split('_')
             if len(undSS) != 4:
@@ -123,7 +122,8 @@ def contentBreakDown(content):
             filteredContent.append(t)
         elif t != '#geocoding':
             filteredContent.append(t)
-
+    if not hasCoords:
+        raise NoCoordsException('the hashtag geocoding was present but there were no coordinates in the pulse.')
     purifiedContent = ' '.join(filteredContent)
     return purifiedContent, entities, coordinates
 

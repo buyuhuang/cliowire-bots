@@ -1,0 +1,107 @@
+﻿# english
+# place type prefix and suffix
+# these are identified in location names and used for token expansion to include location type variants
+# this gives us the maximum chance of matching a location name to the various ways to express it in text
+# e.g. 'london st' -> 'london street', 'london st'
+
+# TITLE = title word of placename (e.g. 'the')
+# TYPE = type of place (e.g. 'road')
+# +<phrase> = prefix
+# <phrase>+ = suffix
+# +<phrase>+ = can be both prefix and suffix
+# *<phrase> = dont use this token for a match but do include it in token expansion
+#   e.g. primary, *school --> matches only primary BUT will expand a match to <name> primary, <name> school
+#        this allows avoidance of overmatching to general names like school (which can be primary, secondary etc.)
+
+# note: save this as UTF-8 not a default latin encoded text file
+# note: types are processed in reverse phrase gram order (so large phrases are matched first)
+
+# add to stoplist location words that on thier own cannot be a specific location
+# e.g. 'north' cannot be used for 'north london'
+
+
+TITLE, +the, +a
+TITLE, public limited company+, plc+, ltd+, limited+, company+, limited company+, co+
+TITLE, org+, organization+, organisation+, group+, society+
+
+TYPE, take away+, takeaway+, take out+, drive thru+, drive through+
+TYPE, fish and chips+, fish & chips+
+TYPE, fruit and veg+, fruit and vegetables+, fruit & veg+, fruit & vegetables+
+TYPE, wine bar+
+TYPE, cyber cafe+, internet cafe+, cyber cafè+, internet cafè+
+TYPE, sandwich bar+
+TYPE, bakery+
+TYPE, bar+
+TYPE, pub+
+TYPE, supermarket+, hypermarket+, market+
+TYPE, catering+
+TYPE, brasserie+
+TYPE, lounge+
+TYPE, rooms+
+TYPE, restaurant+
+TYPE, +cafe+, +cafè+
+
+TYPE, car wash+
+TYPE, shopping centre+, shopping center+, retail park+, mall+
+TYPE, gallery+, art gallery+
+TYPE, caravan park+
+TYPE, car park+
+TYPE, insurance brokers+
+TYPE, estate agents+
+TYPE, services+
+TYPE, systems+
+
+TYPE, railway station+, train station+, *station+
+TYPE, bus station+, coach station+, bus terminal+, coach terminal+, *station+, *terminal+
+TYPE, subway station+, tube station+, subway+, tube+, underground station+, underground+, metro+, *station+
+TYPE, ferry terminal+, ferry+, *terminal+
+TYPE, terminal+
+TYPE, station+
+TYPE, tunnel+
+TYPE, international airport+, *airport+
+TYPE, domestic airport+, *airport+
+TYPE, airport+
+TYPE, heliport+
+
+TYPE, preschool+, early learning centre+, early learning center+, nursery+, creche+, crèche+, child care centre+, child care center+, kindergarten+
+TYPE, primary+, elementary+, elem+, primary school+, *school+, *college+
+TYPE, secondary+, high+, high school+, senior high school+, *school+, *college+
+TYPE, public school+, *school+, *college+
+TYPE, private school+, *school+, *college+
+TYPE, boys school+, boys college+, *school+, *college+
+TYPE, girls school+, girls college+, *school+, *college+
+TYPE, school+, college+
+TYPE, university+, uni+, polytechnic+, polytech+, *college+
+TYPE, library+, public library+
+TYPE, hospital+, hosp+, out patients+, out patients centre+, out patients center+, public hospital+, municipal hospital+
+TYPE, day centre+, day center+
+TYPE, clinic+
+
+TYPE, church+, chapel+
+TYPE, cathedral+
+TYPE, bank+
+TYPE, crown court+, court+, magistrates+, high court+
+TYPE, solicitors+, barristers+
+TYPE, lawyers+
+TYPE, police station+, police+, police department+, police dept+
+TYPE, fire station+, fire department station+, fire dept station+
+
+TYPE, house+
+TYPE, store+, shop+
+TYPE, gallery+
+TYPE, park+
+TYPE, market+
+TYPE, garage+
+TYPE, barracks+
+
+TYPE, stadium+, *building+, *bldg+
+TYPE, hotel+
+TYPE, motel+
+TYPE, bed and breakfast+, bed & breakfast+, b&b+
+TYPE, tavern+, inn+, guest house+
+TYPE, theatre+
+TYPE, cinema+, multiplex+
+TYPE, studio+
+TYPE, centre+, center+
+TYPE, building+, bldg+
+

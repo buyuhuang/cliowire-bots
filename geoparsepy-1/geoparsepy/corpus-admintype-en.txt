@@ -1,0 +1,34 @@
+﻿# english
+# admin region type prefix and suffix
+# these are identified in location names and used for token expansion to include location type variants
+# this gives us the maximum chance of matching a location name to the various ways to express it in text
+# e.g. 'london st' -> 'london street', 'london st'
+
+# TITLE = title word of placename (e.g. 'the')
+# TYPE = type of place (e.g. 'road')
+# +<phrase> = prefix
+# <phrase>+ = suffix
+# +<phrase>+ = can be both prefix and suffix
+# *<phrase> = dont use this token for a match but do include it in token expansion
+#   e.g. primary, *school --> matches only primary BUT will expand a match to <name> primary, <name> school
+#        this allows avoidance of overmatching to general names like school (which can be primary, secondary etc.)
+
+# note: save this as UTF-8 not a default latin encoded text file
+# note: types are processed in reverse phrase gram order (so large phrases are matched first)
+
+# add to stoplist location words that on thier own cannot be a specific location
+# e.g. 'north' cannot be used for 'north london'
+TITLE, +northeast+, +north east+, +north-east+
+TITLE, +northwest+, +north west+, +north-west+
+TITLE, +southeast+, +south east+, +south-east+
+TITLE, +southwest+, +south west+, +south-west+
+TITLE, +north+, +northern
+TITLE, +south+, +southern
+TITLE, +east+, +eastern
+TITLE, +west+, +western
+TITLE, +greater+
+TITLE, +larger+
+TITLE, +lesser+
+TITLE, +smaller+
+TITLE, +upper+
+TITLE, +lower+
