@@ -14,6 +14,15 @@ GEOJSON_PRE = "{\"type\": \"FeatureCollection\",\"generator\": \"overpass-turbo\
 
 GEOJSON_POST = "]}"
 
+#regex that is able to detect if a certain token is a correct coordinate hashtag or not.
+coordReg = re.compile(r"\#pM?[0-9]{1,2}_[0-9]{1,4}_M?[0-9]{1,2}_[0-9]{1,4}")
+
+class NoCoordsException(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
 def main(args):
 
     bot_login, bot_pswd, last_id, file_name = None, None, None, None #BATMAAAAAAAN
@@ -38,10 +47,13 @@ def main(args):
 
     for geopulses in CWIter:
         for p in geopulses:
-            cleanContent = cleanHTTP(p.content)
-            toWrite += jsonParse(cleanContent, int(p.id))
-            toWrite += ','
-            nmbOfPulses += 1
+            cleanContent = cU.cleanHTTP(p.content)
+            try:
+                toWrite += jsonParse(cleanContent, int(p.id))
+                toWrite += ','
+                nmbOfPulses += 1
+            except NoCoordsException:
+                pass
 
     #need to update the id of the most recent pulse to allow statefull future computations
     last_id = CWIter.latest_id
@@ -57,14 +69,6 @@ def main(args):
         cU.updateBotsMetadata(file_name, last_id)
         postPulses.post_content(cliowireConn, [FINAL_PULSE.format(nmbOfPulses)])
 
-def cleanHTTP(content):
-    #Remove href balises, but keep the url
-    cleanHref = re.compile('<a[^>]+href=\"(.*?)\"[^>]*>')
-    #Remove every other http balises
-    cleanr = re.compile('<.*?>')
-    cleantext = re.sub(cleanHref, '', content)
-    cleantext = re.sub(cleanr, '', cleantext)
-    return cleantext
 
 def writeGeoPulses(filepath, pulsesToWrite):
     #first need to create the data folder if it is not already present.
@@ -100,8 +104,11 @@ def contentBreakDown(content):
     filteredContent = []
     entities = []
     coordinates = []
+    #to avoid pulses with the hashtag #geocoding without being a geopulse.
+    hasCoords = False
     for t in tokens:
-        if t.startswith('#p'):
+        if re.match(coordReg, t) != None:
+            hasCoords = True
             removeP = t[2:]
             undSS = removeP.split('_')
             if len(undSS) != 4:
@@ -115,7 +122,8 @@ def contentBreakDown(content):
             filteredContent.append(t)
         elif t != '#geocoding':
             filteredContent.append(t)
-
+    if not hasCoords:
+        raise NoCoordsException('the hashtag geocoding was present but there were no coordinates in the pulse.')
     purifiedContent = ' '.join(filteredContent)
     return purifiedContent, entities, coordinates
 
