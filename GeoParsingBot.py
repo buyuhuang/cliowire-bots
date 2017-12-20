@@ -72,8 +72,8 @@ def coordsToHashtag(coords):
             minus = 'M'
         sep = modf(c)
         first = int(sep[1])
-        sec = int(round(modf(sep[0] * 10000)[1]))
-        toAdd = minus+str(first)+'_'+str(sec)
+        sec = str(10000 + (10000 * round(sep[0], 4)))[1:-2]
+        toAdd = minus+str(first)+'_'+sec
         prelude += toAdd
         if index == 0:
             prelude += '_'
@@ -109,7 +109,6 @@ def main(args):
     credentials.checkIfCredentials(file_name)
 
     cliowireConn = credentials.log_in(file_name, bot_login, bot_pswd)
-
     CWIter = cU.PulseIterator(cliowireConn, oldest_id=last_id, user=correct_account.id)
     data = {}
     data['pulses'] = []
@@ -120,18 +119,34 @@ def main(args):
 
     with open(INTER_JSON_FILE_IN, 'w') as outfile:
         json.dump(data, outfile)
-
     subprocess.call(["./geoparsepy-1/geoparsing.py", INTER_JSON_FILE_IN, INTER_JSON_FILE_OUT, s.lang, str(s.focus_point[0]), str(s.focus_point[1])])
-
+    fnotPosted = open('IdPulsesNotPostedSince'+last_id+'.log','w')
     overApi = overpy.Overpass()
     with open(INTER_JSON_FILE_OUT, 'r') as json_file:
+
         data = json.load(json_file)
+        nmbPulse = 0
         for p in data['pulses']:
             for index in range(len(p['entities'])):
-                coords = getCoords(overApi, p['osmids'][index])
-                newContent = p['content'] + ' #geocoding #'+p['entities'][index]+ ' ' +coordsToHashtag(coords)
-                cliowireConn.status_post(newContent, in_reply_to_id=p['id'])
+                hasIndexerror = False
+                try :
+                    coords = getCoords(overApi, p['osmids'][index])
+                    geoEntity = p['entities'][index]
+                    if not geoEntity.startswith('#'):
+                        geoEntity = '#'+geoEntity
+                    newContent = p['content'] + ' #geocoding ' + geoEntity + ' ' +coordsToHashtag(coords)
+                except IndexError:
+                    hasIndexerror = True
+                if hasIndexerror or  len(newContent) > 499:
+                    if hasIndexerror:
+                        fnotPosted.write('NotFound:')
+                    fnotPosted.write(str(p['id'])+'\n')
+                else:
+                    nmbPulse += 1
+                    cliowireConn.status_post(newContent, in_reply_to_id=p['id'])
+        print('Total number of pulses posted on the platform : '+ repr(nmbPulse))
 
+    fnotPosted.close()
     #need to update the id of the most recent pulse to allow statefull future computations
     last_id = CWIter.latest_id
     #we need to save the last id that we have

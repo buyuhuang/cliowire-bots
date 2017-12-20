@@ -10,6 +10,42 @@ import os
 
 import json
 
+from math import modf
+
+
+CW_URL = "<a href=\"https://cliowire.dhlab.epfl.ch/web/statuses/{}\">{}</a>\n"
+
+
+def coordToFloat(decim, unit):
+    res = 1
+    if decim[0] == 'm' or decim[0] == 'M':
+        res *= -1
+        decim = decim[1:]
+    return res * float(str(decim + '.' + unit))
+
+def sizeToHexaColor(max, size):
+    maxHexaVal = int(0xFFFFFF)
+    actualHexVal = int((size/max) * maxHexaVal)
+    return '#'+repr(hex(actualHexVal))
+
+
+def coordsToHashtag(coords):
+    prelude = "#p"
+    for index in range(len(coords)):
+        minus = ''
+        c = coords[index]
+        if c < 0:
+            c = -c
+            minus = 'M'
+        sep = modf(c)
+        first = int(sep[1])
+        sec = str(10000 + (10000 * round(sep[0], 4)))[1:-2]
+        toAdd = minus+str(first)+'_'+sec
+        prelude += toAdd
+        if index == 0:
+            prelude += '_'
+    return prelude
+
 class Search(MacroElement):
     """
     Adds a search tool to your map.
@@ -113,14 +149,12 @@ Search(pulses, search_label='entities', search_zoom=12).add_to(m)
 
 
 #adding a marker with popup to the place of the pulses.
+mightyDict = {}
 for pulse in pulses['features']:
     p = pulse['properties']
     coord = pulse['geometry']['coordinates']
-    invCoord = [coord[1], coord[0]]
-    content = p['content']
-    pulseid = p['pulseid']
-    url = "<a href=\"https://cliowire.dhlab.epfl.ch/web/statuses/"+str(pulseid)+"\">"+content+"</a>"
-    folium.Marker(invCoord, popup=url).add_to(m)
+    invCoord = coordsToHashtag([coord[1], coord[0]])
+    md_value = [p['pulseid'],p['content']]
 
     lat = coord[1]
     long = coord[0]
@@ -132,6 +166,32 @@ for pulse in pulses['features']:
         long_max = long
     if long<long_min:
         long_min = long
+
+    if not invCoord in mightyDict:
+        mightyDict[invCoord] = []
+
+    mightyDict[invCoord].append(md_value)
+
+
+maxNmb = 0
+for k,v in mightyDict.items():
+    valLen = len(v)
+    if valLen > maxNmb:
+        maxNmb = valLen
+
+for k, v in mightyDict.items():
+    nmbItem = 0
+    content = ''
+    for p in v:
+        nmbItem += 1
+        content += '\n' + repr(nmbItem) + ' : ' + CW_URL.format(repr(p[0]), p[1])
+
+    removeP = k[2:]
+    undSS = removeP.split('_')
+    lng = coordToFloat(undSS[0], undSS[1])
+    lat = coordToFloat(undSS[2], undSS[3])
+    content = repr(nmbItem)+ ' elements under this coordinate.\n'+content
+    folium.Marker([lng, lat], popup=content).add_to(m)
 
 m.fit_bounds([[lat_min, long_min],[lat_max, long_max]])
 
